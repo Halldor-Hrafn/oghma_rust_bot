@@ -42,7 +42,7 @@ impl EventHandler for Handler {
                 "numberinput" => commands::number_input::run(&command.data),
                 "create" => commands::create::run(&command.data),
                 "welcome" => commands::welcome::run(&command.data),
-                "create_spells" => commands::create_spells::run(&command.data),
+                "create_spells" => commands::create_spells::run(&command.data).await,
                 _ => "Unknown command".to_string(),
             };
 

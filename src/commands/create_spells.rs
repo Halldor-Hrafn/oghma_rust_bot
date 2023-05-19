@@ -6,7 +6,7 @@ use postgrest::Postgrest;
 
 use dotenv::dotenv;
 
-pub fn run(data: &CommandData) -> String {
+pub async fn run(data: &CommandData) -> String {
     let options = &data.options;
     dotenv().ok();
     let name = options
@@ -82,17 +82,39 @@ pub fn run(data: &CommandData) -> String {
         .as_str()
         .unwrap();
 
-    println!("name: {:?}", name);
-    println!("cast_time: {:?}", cast_time);
-    println!("range: {:?}", range);
-    println!("components: {:?}", components);
-    println!("duration: {:?}", duration);
-    println!("school: {:?}", school);
-    println!("attack_save: {:?}", attack_save);
-    println!("damage_effect: {:?}", damage_effect);
+    // println!("name: {:?}", name);
+    // println!("cast_time: {:?}", cast_time);
+    // println!("range: {:?}", range);
+    // println!("components: {:?}", components);
+    // println!("duration: {:?}", duration);
+    // println!("school: {:?}", school);
+    // println!("attack_save: {:?}", attack_save);
+    // println!("damage_effect: {:?}", damage_effect);
 
-    let client = Postgrest::new(std::env::var("DATABASE_URL").unwrap().as_str())
-        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
+    let insert_data = format!(
+        r#"
+        [{{
+            "name": "{}",
+            "cast_time": "{}",
+            "range": "{}",
+            "components": "{}",
+            "duration": "{}",
+            "school": "{}",
+            "attack_save": "{}",
+            "damage_effect": "{}"
+        }}]
+        "#,
+        name, cast_time, range, components, duration, school, attack_save, damage_effect
+    );
+
+    // println!("insert_data: {:#?}", insert_data);
+
+    let client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
+        .insert_header("apikey", std::env::var("SUPABASE_SERVICE_KEY").unwrap().as_str());
+
+    let response = client
+        .from("spells")
+        .insert(insert_data);
 
     "TODO: ACTUALLY GET SUPABASE WORKING SO YOU CAN START STORING THE CREATED SPELLS IN A DATABASE INSTEAD OF JUST NOT USING THE 200 LINES OF CODE YOU WROTE YOU FUCKING TWAT".to_string()
 }
