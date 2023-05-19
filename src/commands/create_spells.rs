@@ -107,25 +107,6 @@ pub async fn run(data: &CommandData) -> String {
     response
 }
 
-pub fn insert_into_postgres(
-    name: String,
-    cast_time: String, 
-    range: String, 
-    components: String,
-    duration: String,
-    school: String,
-    attack_save: String,
-    damage_effect: String
-) -> Result<(), postgres::error::Error> {
-    let mut client = Client::connect(std::env::var("SUPABASE_URL").unwrap().as_ref(), NoTls)?;
-
-    let stmt = "INSERT INTO spells (name, cast_time, range, components, duration, school, attack_save, damage_effect) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
-
-    client.execute(stmt, &[&name, &cast_time, &range, &components, &duration, &school, &attack_save, &damage_effect])?;
-
-    Ok(())
-}
-
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("create_spells")
