@@ -4,8 +4,6 @@ use serenity::model::prelude::interaction::application_command::CommandData;
 
 use postgrest::Postgrest;
 
-use postgres::{Client, NoTls};
-
 use dotenv::dotenv;
 
 pub async fn run(data: &CommandData) -> String {
@@ -110,60 +108,67 @@ pub async fn run(data: &CommandData) -> String {
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("create_spells")
-        .description("Create a new task")
+        .description("Create a new spell")
         .create_option(|option| {
             option
                 .name("name")
-                .description("Name of the task")
+                .description("Name of the spell")
+                .kind(CommandOptionType::String)
+                .required(true)
+        })
+        .create_option(|option| {
+            option
+                .name("level")
+                .description("The spells' level")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("cast_time")
-                .description("Description of the task")
+                .description("Cast time of the spell")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("range")
-                .description("Priority of the task")
+                .description("Range of the spell")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("components")
-                .description("Assignee of the task")
+                .description("Components of the spell")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("duration")
-                .description("Project of the task")
+                .description("Duration of the spells' effects")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("school")
-                .description("Status of the task")
+                .description("School of the spell")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("attack_save")
-                .description("Status of the task")
+                .description("The attack/save modifier of the spell")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
                 .name("damage_effect")
-                .description("Status of the task")
+                .description("The damage/effect of the spell")
                 .kind(CommandOptionType::String)
                 .required(true)
         })
