@@ -33,10 +33,9 @@ impl EventHandler for Handler {
         if let Interaction::ApplicationCommand(command) = interaction {
             println!("Got command {:?}", command.data.name);
 
-            // Thought
-            // maybe we don't have to use let content here, and instead have if let Err inside the run function
-            // it will be verbose as fuck but then I could return embeds instead of only string?
-            // I still have no fucking idea how embeds work in serenity
+            // NOTES FOR FUTURE ME (screw future me)
+            // change the tables in Supabase so that we can see which users created which spells
+            // and to make it so that each spell belongs to a specific server
             let content = match command.data.name.as_str() {
                 "ping" => commands::ping::run(&command.data),
                 "numberinput" => commands::number_input::run(&command.data),
