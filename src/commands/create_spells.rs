@@ -4,6 +4,8 @@ use serenity::model::prelude::interaction::application_command::CommandData;
 
 use postgrest::Postgrest;
 
+use postgres::{Client, NoTls};
+
 use dotenv::dotenv;
 
 pub async fn run(data: &CommandData) -> String {
@@ -92,31 +94,60 @@ pub async fn run(data: &CommandData) -> String {
     // println!("damage_effect: {:?}", damage_effect);
 
     let insert_data = format!(
-        r#"
-        [{{
-            "name": "{}",
-            "cast_time": "{}",
-            "range": "{}",
-            "components": "{}",
-            "duration": "{}",
-            "school": "{}",
-            "attack_save": "{}",
-            "damage_effect": "{}"
-        }}]
-        "#,
+        r#"[{{"name": "{}","cast_time": "{}","range": "{}","components": "{}","duration": "{}","school": "{}","attack_save": "{}","damage_effect": "{}"}}]"#,
         name, cast_time, range, components, duration, school, attack_save, damage_effect
     );
 
     // println!("insert_data: {:#?}", insert_data);
 
     let client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
-        .insert_header("apikey", std::env::var("SUPABASE_SERVICE_KEY").unwrap().as_str());
+        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
 
     let response = client
         .from("spells")
-        .insert(insert_data);
+        .insert("[{\"name\": \"test\"}]")
+        .execute()
+        .await;
 
-    "TODO: ACTUALLY GET SUPABASE WORKING SO YOU CAN START STORING THE CREATED SPELLS IN A DATABASE INSTEAD OF JUST NOT USING THE 200 LINES OF CODE YOU WROTE YOU FUCKING TWAT".to_string()
+    let body = response.unwrap().text().await.unwrap();
+
+    println!("body: {:#?}", body);
+    
+
+// std::env::var("SUPABASE_URL").unwrap().as_ref()
+    // let mut client = Client::connect("https://qjfsewhwuoifymwqsazn.supabase.co/rest/v1", NoTls)?;
+
+    // let stmt = "INSERT INTO spells (name, cast_time, range, components, duration, school, attack_save, damage_effect) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
+
+    // client.execute(stmt, &[&name, &cast_time, &range, &components, &duration, &school, &attack_save, &damage_effect])?;
+
+    // let insert_result = insert_into_postgres(name.to_string(), cast_time.to_string(), range.to_string(), components.to_string(), duration.to_string(), school.to_string(), attack_save.to_string(), damage_effect.to_string());
+
+    // match insert_result {
+    //     Ok(_) => return "Successfully inserted into Supabase".to_string(),
+    //     Err(e) => return format!("Error inserting into Supabase: {}", e.to_string())
+    // }
+
+    "I hope this fucking works this time".to_string()
+}
+
+pub fn insert_into_postgres(
+    name: String,
+    cast_time: String, 
+    range: String, 
+    components: String,
+    duration: String,
+    school: String,
+    attack_save: String,
+    damage_effect: String
+) -> Result<(), postgres::error::Error> {
+    let mut client = Client::connect(std::env::var("SUPABASE_URL").unwrap().as_ref(), NoTls)?;
+
+    let stmt = "INSERT INTO spells (name, cast_time, range, components, duration, school, attack_save, damage_effect) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
+
+    client.execute(stmt, &[&name, &cast_time, &range, &components, &duration, &school, &attack_save, &damage_effect])?;
+
+    Ok(())
 }
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
