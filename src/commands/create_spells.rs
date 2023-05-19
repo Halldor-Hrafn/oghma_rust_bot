@@ -84,51 +84,27 @@ pub async fn run(data: &CommandData) -> String {
         .as_str()
         .unwrap();
 
-    // println!("name: {:?}", name);
-    // println!("cast_time: {:?}", cast_time);
-    // println!("range: {:?}", range);
-    // println!("components: {:?}", components);
-    // println!("duration: {:?}", duration);
-    // println!("school: {:?}", school);
-    // println!("attack_save: {:?}", attack_save);
-    // println!("damage_effect: {:?}", damage_effect);
-
     let insert_data = format!(
         r#"[{{"name": "{}","cast_time": "{}","range": "{}","components": "{}","duration": "{}","school": "{}","attack_save": "{}","damage_effect": "{}"}}]"#,
         name, cast_time, range, components, duration, school, attack_save, damage_effect
     );
 
-    // println!("insert_data: {:#?}", insert_data);
-
     let client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
         .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
 
-    let response = client
+    let resp = client
         .from("spells")
-        .insert("[{\"name\": \"test\"}]")
+        .insert(insert_data)
         .execute()
         .await;
 
-    let body = response.unwrap().text().await.unwrap();
+    let body = resp.unwrap().text().await.unwrap();
 
     println!("body: {:#?}", body);
-    
 
-// std::env::var("SUPABASE_URL").unwrap().as_ref()
-    // let mut client = Client::connect("https://qjfsewhwuoifymwqsazn.supabase.co/rest/v1", NoTls)?;
+    let response = format!("Spell named {} created with a cast time of {}\na range of {}\ncomponents of {}\nduration of {}\n in the school of {}\n with a attack_save throw of {}\n and with damage/effect of {}", name, cast_time, range, components, duration, school, attack_save, damage_effect);
 
-    // let stmt = "INSERT INTO spells (name, cast_time, range, components, duration, school, attack_save, damage_effect) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
-
-    // client.execute(stmt, &[&name, &cast_time, &range, &components, &duration, &school, &attack_save, &damage_effect])?;
-
-    // let insert_result = insert_into_postgres(name.to_string(), cast_time.to_string(), range.to_string(), components.to_string(), duration.to_string(), school.to_string(), attack_save.to_string(), damage_effect.to_string());
-
-    // match insert_result {
-    //     Ok(_) => return "Successfully inserted into Supabase".to_string(),
-    //     Err(e) => return format!("Error inserting into Supabase: {}", e.to_string())
-    // }
-
-    "I hope this fucking works this time".to_string()
+    response
 }
 
 pub fn insert_into_postgres(
