@@ -83,7 +83,8 @@ pub async fn run(data: &CommandData) -> String {
         .unwrap();
 
     let insert_data = format!(
-        r#"[{{"name": "{}","cast_time": "{}","range": "{}","components": "{}","duration": "{}","school": "{}","attack_save": "{}","damage_effect": "{}"}}]"#,
+        r#"[{{"name": "{}","cast_time": "{}","range": "{}","components": "{}",\
+        "duration": "{}","school": "{}","attack_save": "{}","damage_effect": "{}"}}]"#,
         name, cast_time, range, components, duration, school, attack_save, damage_effect
     );
 
@@ -100,7 +101,11 @@ pub async fn run(data: &CommandData) -> String {
 
     println!("body: {:#?}", body);
 
-    let response = format!("Spell named {} created with a cast time of {}\na range of {}\ncomponents of {}\nduration of {}\n in the school of {}\n with a attack_save throw of {}\n and with damage/effect of {}", name, cast_time, range, components, duration, school, attack_save, damage_effect);
+    let response = format!("Spell named {} created with a cast time of {}\n\
+                                    a range of {}\ncomponents of {}\nduration of {}\n\
+                                    in the school of {}\n with a attack_save throw of {}\n\
+                                    and with damage/effect of {}", name, cast_time, range, 
+                                    components, duration, school, attack_save, damage_effect);
 
     response
 }
