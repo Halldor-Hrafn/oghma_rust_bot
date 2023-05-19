@@ -1,8 +1,9 @@
 use serenity::builder;
 use serenity::model::prelude::command::CommandOptionType;
-use serenity::model::prelude::interaction::application_command::CommandDataOption;
+use serenity::model::prelude::interaction::application_command::CommandData;
 
-pub fn run(options: &[CommandDataOption]) -> String {
+pub fn run(data: &CommandData) -> String {
+    let options = &data.options;
     println!("{:#?}", &options);
 
     let int = &options[0].value.as_ref().unwrap().as_u64().unwrap();

@@ -1,8 +1,9 @@
 use serenity::builder::CreateApplicationCommand;
 use serenity::model::prelude::command::CommandOptionType;
-use serenity::model::prelude::interaction::application_command::CommandDataOption;
+use serenity::model::prelude::interaction::application_command::CommandData;
 
-pub fn run(options: &[CommandDataOption]) -> String {
+pub fn run(data: &CommandData) -> String {
+    let options = &data.options;
     println!("{:#?}", &options);
 
     "hehehehehehehe".to_string()

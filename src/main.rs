@@ -1,7 +1,7 @@
 mod commands;
 
 use serenity::async_trait;
-use serenity::{prelude::*, framework};
+use serenity::{prelude::*};
 
 use serenity::model::prelude::*;
 use serenity::model::application::command::Command;
@@ -33,12 +33,16 @@ impl EventHandler for Handler {
         if let Interaction::ApplicationCommand(command) = interaction {
             println!("Got command {:?}", command.data.name);
 
+            // Thought
+            // maybe we don't have to use let content here, and instead have if let Err inside the run function
+            // it will be verbose as fuck but then I could return embeds instead of only string?
+            // I still have no fucking idea how embeds work in serenity
             let content = match command.data.name.as_str() {
-                "ping" => commands::ping::run(&command.data.options),
-                "numberinput" => commands::number_input::run(&command.data.options),
-                "create" => commands::create::run(&command.data.options),
-                "welcome" => commands::welcome::run(&command.data.options),
-                "create_spells" => commands::create_spells::run(&command.data.options),
+                "ping" => commands::ping::run(&command.data),
+                "numberinput" => commands::number_input::run(&command.data),
+                "create" => commands::create::run(&command.data),
+                "welcome" => commands::welcome::run(&command.data),
+                "create_spells" => commands::create_spells::run(&command.data),
                 _ => "Unknown command".to_string(),
             };
 
@@ -73,7 +77,7 @@ impl EventHandler for Handler {
                 .expect("Guild id is not a valid id")
         );
 
-        let commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
+        let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::ping::register(command))
                 .create_application_command(|command| commands::number_input::register(command))
@@ -84,7 +88,7 @@ impl EventHandler for Handler {
 
         // println!("Registered commands: {:?}", commands);
 
-        let guild_commands = Command::create_global_application_command(&ctx.http, |command| {
+        let _guild_commands = Command::create_global_application_command(&ctx.http, |command| {
             commands::ping::register(command)
         }).await;
 

@@ -1,11 +1,14 @@
 use serenity::builder;
 use serenity::model::prelude::command::CommandOptionType;
-use serenity::model::prelude::interaction::application_command::CommandDataOption;
+use serenity::model::prelude::interaction::application_command::CommandData;
 
 use postgrest::Postgrest;
 
-pub fn run(options: &[CommandDataOption]) -> String {
-    // unwrap the options into separate variables
+use dotenv::dotenv;
+
+pub fn run(data: &CommandData) -> String {
+    let options = &data.options;
+    dotenv().ok();
     let name = options
         .iter()
         .find(|option| option.name == "name")
@@ -87,6 +90,9 @@ pub fn run(options: &[CommandDataOption]) -> String {
     println!("school: {:?}", school);
     println!("attack_save: {:?}", attack_save);
     println!("damage_effect: {:?}", damage_effect);
+
+    let client = Postgrest::new(std::env::var("DATABASE_URL").unwrap().as_str())
+        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
 
     "TODO: ACTUALLY GET SUPABASE WORKING SO YOU CAN START STORING THE CREATED SPELLS IN A DATABASE INSTEAD OF JUST NOT USING THE 200 LINES OF CODE YOU WROTE YOU FUCKING TWAT".to_string()
 }
