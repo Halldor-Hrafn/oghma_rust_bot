@@ -1,6 +1,6 @@
 mod commands;
 
-use serenity::async_trait;
+use serenity::{async_trait, client};
 use serenity::{prelude::*};
 
 use serenity::model::prelude::*;
@@ -8,6 +8,8 @@ use serenity::model::application::command::Command;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
+
+use serenity::builder::CreateEmbed;
 
 use serenity::framework::standard::{
     StandardFramework,
@@ -64,6 +66,10 @@ impl EventHandler for Handler {
                 println!("Error sending message: {:?}", why);
             }
         }
+
+        if msg.content == "embed" {
+            todo!()
+        }
     }
 
     async fn ready(&self, ctx: Context, ready: Ready) {
@@ -94,6 +100,22 @@ impl EventHandler for Handler {
         // println!("Registered guild commands: {:?}", guild_commands);
     }
 }
+
+// async fn send_embed(ctx: &Context, msg: &Message) {
+//     let embed = CreateEmbed::default()
+//         .title("Title")
+//         .description("Description")
+//         .field("Field 1", "Value 1", true)
+//         .field("Field 2", "Value 2", true)
+//         .footer(|f| f.text("Footer"));
+
+//     let _ = msg.channel_id.send_message(&ctx.http, |m| {
+//         m.embed(|e| {
+//             e.clone_from(&embed);
+//             e
+//         })
+//     }).await;
+// }
 
 #[tokio::main]
 async fn main() {
