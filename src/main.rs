@@ -95,11 +95,6 @@ impl EventHandler for Handler {
 
         // println!("Registered commands: {:?}", commands);
 
-        // let _guild_commands = Command::create_global_application_command(&ctx.http, |command| {
-        //     commands::ping::register(command);
-        //     commands::create_spell::register(command)
-        // }).await;
-
         let _guild_commands = Command::set_global_application_commands(&ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::ping::register(command))
@@ -109,22 +104,6 @@ impl EventHandler for Handler {
         // println!("Registered guild commands: {:?}", guild_commands);
     }
 }
-
-// async fn send_embed(ctx: &Context, msg: &Message) {
-//     let embed = CreateEmbed::default()
-//         .title("Title")
-//         .description("Description")
-//         .field("Field 1", "Value 1", true)
-//         .field("Field 2", "Value 2", true)
-//         .footer(|f| f.text("Footer"));
-
-//     let _ = msg.channel_id.send_message(&ctx.http, |m| {
-//         m.embed(|e| {
-//             e.clone_from(&embed);
-//             e
-//         })
-//     }).await;
-// }
 
 #[tokio::main]
 async fn main() {

@@ -2,7 +2,7 @@ use serenity::builder;
 use serenity::builder::CreateEmbed;
 use serenity::model::prelude::command::CommandOptionType;
 use serenity::model::prelude::interaction::application_command::CommandData;
-use serenity::http::Http;
+use serenity::model::id::GuildId;
 
 use serde_json::json;
 
@@ -30,15 +30,14 @@ pub async fn run(data: &CommandData) -> String {
     // println!("data: {:#?}", data);
     dotenv().ok();
 
-    let guild = data.guild_id.unwrap();
+    let _guild: GuildId;
 
-    let application_id = std::env::var("APPLICATION_ID")
-    .expect("APPLICATION_ID environment variable not set")
-    .parse::<u64>()
-    .expect("Failed to parse APPLICATION_ID as u64");
-
-    let http = Http::new_with_application_id(&std::env::var("DISCORD_TOKEN").unwrap(), application_id);
-    let _member_count = guild.members(http, None, None).await.unwrap().len() as u64;
+    match data.guild_id {
+        Some(id) => {
+            _guild = id;
+        }
+        None => println!("No guild ID"),
+    }
 
     let options = &data.options;
 
