@@ -3,4 +3,4 @@ pub mod number_input;
 pub mod welcome;
 
 pub mod create;
-pub mod create_spells;
+pub mod create_spell;

@@ -40,7 +40,7 @@ impl EventHandler for Handler {
                 "numberinput" => commands::number_input::run(&command.data),
                 "create" => commands::create::run(&command.data),
                 "welcome" => commands::welcome::run(&command.data),
-                "create_spells" => commands::create_spells::run(&command.data).await,
+                "create_spell" => commands::create_spell::run(&command.data).await,
                 _ => "Unknown command".to_string(),
             };
 
@@ -50,7 +50,7 @@ impl EventHandler for Handler {
                         .kind(InteractionResponseType::ChannelMessageWithSource)
                         .interaction_response_data(|message| {
                             if content.as_str().contains("command_create_spells") {
-                                let embed = commands::create_spells::create_spell_embed(&content);
+                                let embed = commands::create_spell::create_spell_embed(&content);
                                 message.add_embed(embed)
                             } else {
                                 message.content(content)
@@ -92,7 +92,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::number_input::register(command))
                 .create_application_command(|command| commands::welcome::register(command))
                 .create_application_command(|command| commands::create::register(command))
-                .create_application_command(|command| commands::create_spells::register(command))
+                .create_application_command(|command| commands::create_spell::register(command))
         }).await;
 
         // println!("Registered commands: {:?}", commands);

@@ -32,8 +32,6 @@ pub async fn run(data: &CommandData) -> String {
     // println!("data: {:#?}", data);
     dotenv().ok();
 
-    let channel_id = "1051151842098294819".to_string();
-
     let guild = data.guild_id.unwrap();
 
     let application_id = std::env::var("APPLICATION_ID")
@@ -172,8 +170,8 @@ pub async fn run(data: &CommandData) -> String {
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
-        .name("create_spells")
-        .description("Create a new spell")
+        .name("create_spell")
+        .description("Creates a new spell.")
         .create_option(|option| {
             option
                 .name("name")
