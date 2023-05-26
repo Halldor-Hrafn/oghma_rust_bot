@@ -35,9 +35,6 @@ impl EventHandler for Handler {
         if let Interaction::ApplicationCommand(command) = interaction {
             println!("Got command {:?}", command.data.name);
 
-            // NOTES FOR FUTURE ME (screw future me)
-            // change the tables in Supabase so that we can see which users created which spells
-            // and to make it so that each spell belongs to a specific server
             let content = match command.data.name.as_str() {
                 "ping" => commands::ping::run(&command.data),
                 "numberinput" => commands::number_input::run(&command.data),
@@ -51,7 +48,14 @@ impl EventHandler for Handler {
                 .create_interaction_response(&ctx.http, |response| {
                     response
                         .kind(InteractionResponseType::ChannelMessageWithSource)
-                        .interaction_response_data(|message| message.content(content))
+                        .interaction_response_data(|message| {
+                            if content.as_str().contains("command_create_spells") {
+                                let embed = commands::create_spells::create_spell_embed(&content);
+                                message.add_embed(embed)
+                            } else {
+                                message.content(content)
+                            }
+                        })
                 })
                 .await
             {

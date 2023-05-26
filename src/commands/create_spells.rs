@@ -1,7 +1,10 @@
 use serenity::builder;
+use serenity::builder::CreateEmbed;
 use serenity::model::prelude::command::CommandOptionType;
 use serenity::model::prelude::interaction::application_command::CommandData;
 use serenity::http::Http;
+use serenity::model::id::GuildId;
+use serenity::model::prelude::ChannelId;
 
 use serde_json::json;
 
@@ -9,8 +12,27 @@ use postgrest::Postgrest;
 
 use dotenv::dotenv;
 
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
+struct SpellData {
+    command: String,
+    name: String,
+    level: String,
+    cast_time: String,
+    range: String,
+    components: String,
+    duration: String,
+    school: String,
+    attack_save: String,
+    damage_effect: String,
+}
+
 pub async fn run(data: &CommandData) -> String {
+    // println!("data: {:#?}", data);
     dotenv().ok();
+
+    let channel_id = "1051151842098294819".to_string();
 
     let guild = data.guild_id.unwrap();
 
@@ -128,33 +150,24 @@ pub async fn run(data: &CommandData) -> String {
         .execute()
         .await;
 
-    let body_1 = resp_1.unwrap().text().await.unwrap();
+    let _body_1 = resp_1.unwrap().text().await.unwrap();
 
-    println!("body: {:#?}", body_1);
+    let spell_data = SpellData {
+        command: "command_create_spells".to_owned(),
+        name: name.to_owned(),
+        level: level.to_owned(),
+        cast_time: cast_time.to_owned(),
+        range: range.to_owned(),
+        components: components.to_owned(),
+        duration: duration.to_owned(),
+        school: school.to_owned(),
+        attack_save: attack_save.to_owned(),
+        damage_effect: damage_effect.to_owned(),
+    };
 
-    let insert_data_2 = json!({
-        "guild_id": guild,
-        "member_count": member_count,
-    }).to_string();
+    let spell_data_json = serde_json::to_string(&spell_data).unwrap();
 
-    let resp_2 = postgrest_client
-        .from("guilds")
-        .upsert(insert_data_2)
-        .execute()
-        .await;
-
-    let body_2 = resp_2.unwrap().text().await.unwrap();
-
-    println!("body: {:#?}", body_2);
-
-    let response = format!("Spell named {} created with a cast time of {}\n\
-        a range of {}\ncomponents of {}\nduration of {}\n\
-        in the school of {}\n with a attack_save throw of {}\n\
-        and with damage/effect of {}", name, cast_time, range, 
-        components, duration, school, attack_save, damage_effect
-    );
-
-    response
+    spell_data_json
 }
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
@@ -224,4 +237,24 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
                 .kind(CommandOptionType::String)
                 .required(true)
         })
+}
+
+pub fn create_spell_embed(data: &str) -> builder::CreateEmbed {
+    let spell_data: SpellData = serde_json::from_str(data).unwrap();
+
+    let embed = CreateEmbed::default()
+        .title("Spell Created")
+        .description(format!("Spell {} has been created!", spell_data.name))
+        .field("Name", spell_data.name, true)
+        .field("Level", spell_data.level, true)
+        .field("Cast Time", spell_data.cast_time, true)
+        .field("Range", spell_data.range, true)
+        .field("Components", spell_data.components, true)
+        .field("Duration", spell_data.duration, true)
+        .field("School", spell_data.school, true)
+        .field("Attack/Save", spell_data.attack_save, true)
+        .field("Damage/Effect", spell_data.damage_effect, true)
+        .to_owned();
+
+    embed
 }
