@@ -3,8 +3,6 @@ use serenity::builder::CreateEmbed;
 use serenity::model::prelude::command::CommandOptionType;
 use serenity::model::prelude::interaction::application_command::CommandData;
 use serenity::http::Http;
-use serenity::model::id::GuildId;
-use serenity::model::prelude::ChannelId;
 
 use serde_json::json;
 
@@ -40,7 +38,7 @@ pub async fn run(data: &CommandData) -> String {
     .expect("Failed to parse APPLICATION_ID as u64");
 
     let http = Http::new_with_application_id(&std::env::var("DISCORD_TOKEN").unwrap(), application_id);
-    let member_count = guild.members(http, None, None).await.unwrap().len() as u64;
+    let _member_count = guild.members(http, None, None).await.unwrap().len() as u64;
 
     let options = &data.options;
 
@@ -126,30 +124,6 @@ pub async fn run(data: &CommandData) -> String {
         .as_str()
         .unwrap();
 
-    let insert_data_1 = json!({
-        "name": name,
-        "level": level,
-        "cast_time": cast_time,
-        "range": range,
-        "components": components,
-        "duration": duration,
-        "school": school,
-        "attack_save": attack_save,
-        "damage_effect": damage_effect,
-        "guild_id": guild
-    }).to_string();
-
-    let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
-        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
-
-    let resp_1 = postgrest_client
-        .from("spells")
-        .insert(insert_data_1)
-        .execute()
-        .await;
-
-    let _body_1 = resp_1.unwrap().text().await.unwrap();
-
     let spell_data = SpellData {
         command: "command_create_spells".to_owned(),
         name: name.to_owned(),
@@ -162,6 +136,17 @@ pub async fn run(data: &CommandData) -> String {
         attack_save: attack_save.to_owned(),
         damage_effect: damage_effect.to_owned(),
     };
+
+    let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
+        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
+
+    let resp_1 = postgrest_client
+        .from("spells")
+        .insert(json!(spell_data).to_string())
+        .execute()
+        .await;
+
+    let _body_1 = resp_1.unwrap().text().await.unwrap();
 
     let spell_data_json = serde_json::to_string(&spell_data).unwrap();
 

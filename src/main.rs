@@ -1,6 +1,6 @@
 mod commands;
 
-use serenity::{async_trait, client};
+use serenity::{async_trait};
 use serenity::{prelude::*};
 
 use serenity::model::prelude::*;
@@ -8,8 +8,6 @@ use serenity::model::application::command::Command;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
-
-use serenity::builder::CreateEmbed;
 
 use serenity::framework::standard::{
     StandardFramework,
@@ -97,8 +95,15 @@ impl EventHandler for Handler {
 
         // println!("Registered commands: {:?}", commands);
 
-        let _guild_commands = Command::create_global_application_command(&ctx.http, |command| {
-            commands::ping::register(command)
+        // let _guild_commands = Command::create_global_application_command(&ctx.http, |command| {
+        //     commands::ping::register(command);
+        //     commands::create_spell::register(command)
+        // }).await;
+
+        let _guild_commands = Command::set_global_application_commands(&ctx.http, |commands| {
+            commands
+                .create_application_command(|command| commands::ping::register(command))
+                // .create_application_command(|command| commands::create_spell::register(command))
         }).await;
 
         // println!("Registered guild commands: {:?}", guild_commands);
