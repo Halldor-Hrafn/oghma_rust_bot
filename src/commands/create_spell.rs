@@ -24,6 +24,7 @@ struct SpellData {
     attack_save: String,
     damage_effect: String,
     guild_id: String,
+    user_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -38,13 +39,15 @@ struct InsertData {
     attack_save: String,
     damage_effect: String,
     guild_id: String,
+    user_id: String,
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
-    // println!("data: {:#?}", data);
+    // println!("data: {:#?}", command.data);
     dotenv().ok();
 
     let guild_id = command.guild_id.unwrap().to_string();
+    let user_id = command.user.id.to_string();
 
     let options = &command.data.options;
 
@@ -142,6 +145,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         attack_save: attack_save.to_owned(),
         damage_effect: damage_effect.to_owned(),
         guild_id: guild_id.to_owned(),
+        user_id: user_id.to_owned(),
     };
 
     let insert_data = InsertData {
@@ -155,6 +159,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         attack_save: attack_save.to_owned(),
         damage_effect: damage_effect.to_owned(),
         guild_id: guild_id.to_owned(),
+        user_id: user_id.to_owned(),
     };
 
     let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
@@ -166,9 +171,9 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .execute()
         .await;
 
-    let body = resp.unwrap().text().await.unwrap();
+    let _body = resp.unwrap().text().await.unwrap();
 
-    println!("body: {:#?}", body);
+    // println!("body: {:#?}", _body);
 
     let spell_data_json = serde_json::to_string(&spell_data).unwrap();
 

@@ -41,6 +41,7 @@ impl EventHandler for Handler {
                 "create" => commands::create::run(&command),
                 "welcome" => commands::welcome::run(&command),
                 "create_spell" => commands::create_spell::run(&command).await,
+                "list_spells" => commands::list_spells::run(&command).await,
                 _ => "Unknown command".to_string(),
             };
 
@@ -51,6 +52,9 @@ impl EventHandler for Handler {
                         .interaction_response_data(|message| {
                             if content.as_str().contains("command_create_spells") {
                                 let embed = commands::create_spell::create_spell_embed(&content);
+                                message.add_embed(embed)
+                            } else if content.as_str().contains("command_list_spells") {
+                                let embed = commands::list_spells::create_list_spells_embed(&content);
                                 message.add_embed(embed)
                             } else {
                                 message.content(content)
@@ -93,6 +97,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::welcome::register(command))
                 .create_application_command(|command| commands::create::register(command))
                 .create_application_command(|command| commands::create_spell::register(command))
+                .create_application_command(|command| commands::list_spells::register(command))
         }).await;
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::YellowFg);
