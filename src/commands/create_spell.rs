@@ -2,7 +2,6 @@ use serenity::builder;
 use serenity::builder::CreateEmbed;
 use serenity::model::prelude::command::CommandOptionType;
 use serenity::model::prelude::interaction::application_command::ApplicationCommandInteraction;
-use serenity::model::id::GuildId;
 
 use serde_json::json;
 

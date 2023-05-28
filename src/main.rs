@@ -21,6 +21,8 @@ use serenity::framework::standard::{
 use dotenv::dotenv;
 use std::env;
 
+use colorized::*;
+
 #[group]
 #[commands(ping)]
 struct General;
@@ -57,7 +59,7 @@ impl EventHandler for Handler {
                 })
                 .await
             {
-                println!("Cannot respond to slash command: {:?}", why);
+                colorize_println(format!("Cannot respond to slash command: {:?}", why), Colors::RedFg)
             }
         }
     }
@@ -75,7 +77,7 @@ impl EventHandler for Handler {
     }
 
     async fn ready(&self, ctx: Context, ready: Ready) {
-        println!("{} is connected!", ready.user.name);
+        colorize_println(format!("{} is connected!", ready.user.name), Colors::GreenFg);
 
         let guild_id = GuildId(
             env::var("GUILD_ID")
@@ -93,15 +95,15 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::create_spell::register(command))
         }).await;
 
-        // println!("Registered commands: {:?}", commands);
+        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::YellowFg);
 
-        let _guild_commands = Command::set_global_application_commands(&ctx.http, |commands| {
+        let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::ping::register(command))
                 // .create_application_command(|command| commands::create_spell::register(command))
         }).await;
 
-        // println!("Registered guild commands: {:?}", guild_commands);
+        colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::YellowFg);
     }
 }
 
@@ -124,7 +126,7 @@ async fn main() {
         .expect("Err creating client");
 
     if let Err(why) = client.start().await {
-        println!("Client error: {:?}", why);
+        colorize_println(format!("Client error: {:?}", why), Colors::RedFg)
     }
 }
 
