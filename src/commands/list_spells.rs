@@ -7,6 +7,8 @@ use postgrest::Postgrest;
 
 use serde::{Serialize, Deserialize};
 
+use colorized::*;
+
 #[derive(Serialize, Deserialize, Debug)]
 struct SpellData {
     name: String,
@@ -32,8 +34,10 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let user_id = command.user.id.to_string();
     let guild_id = command.guild_id.unwrap().to_string();
 
-    let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
-        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
+    let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL")
+        .expect(colorize_this("Expected a URL in the environment", Colors::RedFg).as_str()).as_str())
+        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY")
+        .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
     let resp = postgrest_client
         .from("spells")

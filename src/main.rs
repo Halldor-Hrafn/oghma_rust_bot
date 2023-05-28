@@ -33,7 +33,7 @@ struct Handler;
 impl EventHandler for Handler {
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::ApplicationCommand(command) = interaction {
-            println!("Got command {:?}", command.data.name);
+            colorize_println(format!("Got command: {:?}", command.data.name), Colors::YellowFg);
 
             let content = match command.data.name.as_str() {
                 "ping" => commands::ping::run(&command),
@@ -69,12 +69,8 @@ impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.content == "ping" {
             if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
-                println!("Error sending message: {:?}", why);
+                colorize_println(format!("Error sending message: {:?}", why), Colors::RedFg)
             }
-        }
-
-        if msg.content == "embed" {
-            todo!()
         }
     }
 
@@ -83,9 +79,9 @@ impl EventHandler for Handler {
 
         let guild_id = GuildId(
             env::var("GUILD_ID")
-                .expect("Expected a guild id in the environment")
+                .expect(colorize_this("Expected a guild id in the environment", Colors::RedFg).as_str())
                 .parse::<u64>()
-                .expect("Guild id is not a valid id")
+                .expect(colorize_this("Guild id is not a valid id", Colors::RedFg).as_str())
         );
 
         let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
@@ -96,7 +92,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::list_spells::register(command))
         }).await;
 
-        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::YellowFg);
+        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
 
         let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
             commands
@@ -104,7 +100,7 @@ impl EventHandler for Handler {
                 // .create_application_command(|command| commands::create_spell::register(command))
         }).await;
 
-        colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::YellowFg);
+        colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
     }
 }
 
@@ -116,7 +112,7 @@ async fn main() {
         .group(&GENERAL_GROUP);
 
     let token = env::var("DISCORD_TOKEN")
-        .expect("Expected a token in the environment");
+        .expect(colorize_this("Expected a token in the environment", Colors::RedFg).as_str());
     let intents = GatewayIntents::all();
 
     let mut client = Client::builder(token, intents)
