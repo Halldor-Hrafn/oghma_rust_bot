@@ -1,9 +1,9 @@
 use serenity::builder;
 use serenity::model::prelude::command::CommandOptionType;
-use serenity::model::prelude::interaction::application_command::CommandData;
+use serenity::model::prelude::interaction::application_command::ApplicationCommandInteraction;
 
-pub fn run(data: &CommandData) -> String {
-    let options = &data.options;
+pub fn run(command: &ApplicationCommandInteraction) -> String {
+    let options = &command.data.options;
     println!("{:#?}", &options);
 
     "TODO".to_string()

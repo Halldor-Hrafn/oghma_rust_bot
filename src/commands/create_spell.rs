@@ -1,7 +1,7 @@
 use serenity::builder;
 use serenity::builder::CreateEmbed;
 use serenity::model::prelude::command::CommandOptionType;
-use serenity::model::prelude::interaction::application_command::CommandData;
+use serenity::model::prelude::interaction::application_command::ApplicationCommandInteraction;
 use serenity::model::id::GuildId;
 
 use serde_json::json;
@@ -24,22 +24,30 @@ struct SpellData {
     school: String,
     attack_save: String,
     damage_effect: String,
+    guild_id: String,
 }
 
-pub async fn run(data: &CommandData) -> String {
+#[derive(Serialize, Deserialize)]
+struct InsertData {
+    name: String,
+    level: String,
+    cast_time: String,
+    range: String,
+    components: String,
+    duration: String,
+    school: String,
+    attack_save: String,
+    damage_effect: String,
+    guild_id: String,
+}
+
+pub async fn run(command: &ApplicationCommandInteraction) -> String {
     // println!("data: {:#?}", data);
     dotenv().ok();
 
-    let _guild: GuildId;
+    let guild_id = command.guild_id.unwrap().to_string();
 
-    match data.guild_id {
-        Some(id) => {
-            _guild = id;
-        }
-        None => println!("No guild ID"),
-    }
-
-    let options = &data.options;
+    let options = &command.data.options;
 
     let name = options
         .iter()
@@ -134,18 +142,34 @@ pub async fn run(data: &CommandData) -> String {
         school: school.to_owned(),
         attack_save: attack_save.to_owned(),
         damage_effect: damage_effect.to_owned(),
+        guild_id: guild_id.to_owned(),
+    };
+
+    let insert_data = InsertData {
+        name: name.to_owned(),
+        level: level.to_owned(),
+        cast_time: cast_time.to_owned(),
+        range: range.to_owned(),
+        components: components.to_owned(),
+        duration: duration.to_owned(),
+        school: school.to_owned(),
+        attack_save: attack_save.to_owned(),
+        damage_effect: damage_effect.to_owned(),
+        guild_id: guild_id.to_owned(),
     };
 
     let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL").unwrap().as_str())
         .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY").unwrap().as_str());
 
-    let resp_1 = postgrest_client
+    let resp = postgrest_client
         .from("spells")
-        .insert(json!(spell_data).to_string())
+        .insert(json!(insert_data).to_string())
         .execute()
         .await;
 
-    let _body_1 = resp_1.unwrap().text().await.unwrap();
+    let body = resp.unwrap().text().await.unwrap();
+
+    println!("body: {:#?}", body);
 
     let spell_data_json = serde_json::to_string(&spell_data).unwrap();
 

@@ -1,7 +1,7 @@
 use serenity::builder::CreateApplicationCommand;
-use serenity::model::prelude::interaction::application_command::CommandData;
+use serenity::model::prelude::interaction::application_command::ApplicationCommandInteraction;
 
-pub fn run(_data: &CommandData) -> String {
+pub fn run(_command: &ApplicationCommandInteraction) -> String {
     "Hey, I'm alive!".to_string()
 }
 

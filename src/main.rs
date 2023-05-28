@@ -34,11 +34,11 @@ impl EventHandler for Handler {
             println!("Got command {:?}", command.data.name);
 
             let content = match command.data.name.as_str() {
-                "ping" => commands::ping::run(&command.data),
-                "numberinput" => commands::number_input::run(&command.data),
-                "create" => commands::create::run(&command.data),
-                "welcome" => commands::welcome::run(&command.data),
-                "create_spell" => commands::create_spell::run(&command.data).await,
+                "ping" => commands::ping::run(&command),
+                "numberinput" => commands::number_input::run(&command),
+                "create" => commands::create::run(&command),
+                "welcome" => commands::welcome::run(&command),
+                "create_spell" => commands::create_spell::run(&command).await,
                 _ => "Unknown command".to_string(),
             };
 
