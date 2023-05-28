@@ -86,10 +86,9 @@ impl EventHandler for Handler {
 
         let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
-                .create_application_command(|command| commands::ping::register(command))
                 .create_application_command(|command| commands::welcome::register(command))
-                .create_application_command(|command| commands::create_spell::register(command))
-                .create_application_command(|command| commands::list_spells::register(command))
+                //.create_application_command(|command| commands::create_spell::register(command))
+                //.create_application_command(|command| commands::list_spells::register(command))
         }).await;
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
@@ -97,7 +96,8 @@ impl EventHandler for Handler {
         let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::ping::register(command))
-                // .create_application_command(|command| commands::create_spell::register(command))
+                .create_application_command(|command| commands::create_spell::register(command))
+                .create_application_command(|command| commands::list_spells::register(command))
         }).await;
 
         colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
