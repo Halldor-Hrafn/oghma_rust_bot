@@ -152,12 +152,12 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
     let _body = resp.unwrap().text().await.unwrap();
 
+    colorize_println(format!("body: {:#?}", _body), Colors::BrightYellowFg);
+
     let data = Data {
         command: "command_create_spells".to_owned(),
         spells: spell_data,
     };
-
-    // println!("body: {:#?}", _body);
 
     let data_json = serde_json::to_string(&data).unwrap();
 

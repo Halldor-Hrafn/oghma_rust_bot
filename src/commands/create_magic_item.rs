@@ -100,13 +100,15 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY")
         .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
-    let response = postgrest_client
+    let resp = postgrest_client
         .from("magic_items")
         .insert(json!(&item_data).to_string())
         .execute()
         .await;
 
-    let _body = response.unwrap().text().await.unwrap();
+    let _body = resp.unwrap().text().await.unwrap();
+
+    colorize_println(format!("body: {:#?}", _body), Colors::BrightYellowFg);
 
     let data = Data {
         command: "command_create_magic_item".to_string(),

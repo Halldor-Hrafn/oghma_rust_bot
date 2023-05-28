@@ -9,25 +9,23 @@ use serde::{Serialize, Deserialize};
 
 use colorized::*;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct SpellData {
+#[derive(Serialize, Deserialize)]
+struct MagicItemData {
     name: String,
-    level: String,
-    cast_time: String,
-    range: String,
-    components: String,
-    duration: String,
-    school: String,
-    attack_save: String,
-    damage_effect: String,
+    rarity: String,
+    type_: String,
+    description: String,
+    attunement: bool,
+    guild_id: String,
+    user_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 struct Data {
     command: String,
     user_id: String,
     guild_id: String,
-    spells: Vec<SpellData>,
+    magic_items: Vec<MagicItemData>,
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
@@ -40,7 +38,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
     let resp = postgrest_client
-        .from("spells")
+        .from("magic_items")
         .select("*")
         .eq("guild_id", guild_id.as_str())
         .eq("user_id", user_id.as_str())
@@ -51,13 +49,13 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
     colorize_println(format!("body: {:#?}", body), Colors::BrightYellowFg);
 
-    let deserialized_spells_vec: Vec<SpellData> = serde_json::from_str(&body).unwrap();
+    let deserialized_magic_items_vec: Vec<MagicItemData> = serde_json::from_str(&body).unwrap();
 
     let data = Data {
-        command: "command_list_spells".to_string(),
+        command: "command_list_magic_items".to_string(),
         user_id: user_id,
         guild_id: guild_id,
-        spells: deserialized_spells_vec,
+        magic_items: deserialized_magic_items_vec,
     };
 
     let data_json: String = serde_json::to_string(&data).unwrap();
@@ -67,26 +65,27 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
-        .name("list_spells")
-        .description("List all spells you or someone else created in this server")
+        .name("list_magic_items")
+        .description("List all magic items you or someone else created in this server")
         .create_option(|option| {
             option
                 .name("user")
-                .description("User to list spells for")
+                .description("The user to list magic items for")
                 .kind(CommandOptionType::User)
                 .required(false)
         })
 }
-
-pub fn create_list_spells_embed(content: &String) -> CreateEmbed {
+pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
     let data: Data = serde_json::from_str(content).unwrap();
 
-    //copilot made the embed below
-    // I have no fucking idea how it did it, but it works, so I won't complain.
     CreateEmbed::default()
-        .title("Spell Created")
-        .description(format!("A list of spells created by: <@{}> in this guild", data.user_id))
-        .fields(data.spells.iter().map(|spell| {
-            (spell.name.clone(), format!("Level: {}\nCast Time: {}\nRange: {}\nComponents: {}\nDuration: {}\nSchool: {}\nAttack/Save: {}\nDamage/Effect: {}", spell.level, spell.cast_time, spell.range, spell.components, spell.duration, spell.school, spell.attack_save, spell.damage_effect), false)
+        .title("Magic Items created")
+        .description(format!("Magic Items created by <@{}>", data.user_id))
+        .fields(data.magic_items.iter().map(|magic_item| {
+            (
+                magic_item.name.clone(),
+                format!("Rarity: {}\nType: {}\nDescription: {}\nAttunement: {}", magic_item.rarity, magic_item.type_, magic_item.description, magic_item.attunement),
+                false
+            )
         }).collect::<Vec<(String, String, bool)>>()).to_owned()
 }
