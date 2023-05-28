@@ -83,12 +83,10 @@ pub fn create_list_spells_embed(content: &String) -> CreateEmbed {
 
     //copilot made the embed below
     // I have no fucking idea how it did it, but it works, so I won't complain.
-    let embed = CreateEmbed::default()
+    CreateEmbed::default()
         .title("Spell Created")
         .description(format!("A list of spells created by: {} in this guild", data.user_id))
         .fields(data.spells.iter().map(|spell| {
             (spell.name.clone(), format!("Level: {}\nCast Time: {}\nRange: {}\nComponents: {}\nDuration: {}\nSchool: {}\nAttack/Save: {}\nDamage/Effect: {}", spell.level, spell.cast_time, spell.range, spell.components, spell.duration, spell.school, spell.attack_save, spell.damage_effect), false)
-        }).collect::<Vec<(String, String, bool)>>()).to_owned();
-
-    embed
+        }).collect::<Vec<(String, String, bool)>>()).to_owned()
 }

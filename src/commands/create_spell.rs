@@ -233,22 +233,41 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
+// pub fn create_spell_embed(data: &str) -> builder::CreateEmbed {
+//     let data: Data = serde_json::from_str(data).unwrap();
+
+//     let embed = CreateEmbed::default()
+//         .title("Spell created")
+//         .description(format!("Spell {} has been created!", data.spells.name))
+//         .field("Name", data.spells.name, true)
+//         .field("Level", data.spells.level, true)
+//         .field("Cast Time", data.spells.cast_time, true)
+//         .field("Range", data.spells.range, true)
+//         .field("Components", data.spells.components, true)
+//         .field("Duration", data.spells.duration, true)
+//         .field("School", data.spells.school, true)
+//         .field("Attack/Save", data.spells.attack_save, true)
+//         .field("Damage/Effect", data.spells.damage_effect, true)
+//         .to_owned();
+
+//     embed
+// }
+
 pub fn create_spell_embed(data: &str) -> builder::CreateEmbed {
     let data: Data = serde_json::from_str(data).unwrap();
+    let spell = &data.spells;
 
-    let embed = CreateEmbed::default()
+    CreateEmbed::default()
         .title("Spell created")
-        .description(format!("Spell {} has been created!", data.spells.name))
-        .field("Name", data.spells.name, true)
-        .field("Level", data.spells.level, true)
-        .field("Cast Time", data.spells.cast_time, true)
-        .field("Range", data.spells.range, true)
-        .field("Components", data.spells.components, true)
-        .field("Duration", data.spells.duration, true)
-        .field("School", data.spells.school, true)
-        .field("Attack/Save", data.spells.attack_save, true)
-        .field("Damage/Effect", data.spells.damage_effect, true)
-        .to_owned();
-
-    embed
+        .description(format!("Spell {} has been created!", spell.name))
+        .field("Name", spell.name.as_str(), true)
+        .field("Level", spell.level.as_str(), true)
+        .field("Cast Time", spell.cast_time.as_str(), true)
+        .field("Range", spell.range.as_str(), true)
+        .field("Components", spell.components.as_str(), true)
+        .field("Duration", spell.duration.as_str(), true)
+        .field("School", spell.school.as_str(), true)
+        .field("Attack/Save", spell.attack_save.as_str(), true)
+        .field("Damage/Effect", spell.damage_effect.as_str(), true)
+        .to_owned()
 }

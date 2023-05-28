@@ -39,6 +39,7 @@ impl EventHandler for Handler {
                 "ping" => commands::ping::run(&command),
                 "welcome" => commands::welcome::run(&command),
                 "create_spell" => commands::create_spell::run(&command).await,
+                "create_magic_item" => commands::create_magic_item::run(&command).await,
                 "list_spells" => commands::list_spells::run(&command).await,
                 _ => "Unknown command".to_string(),
             };
@@ -53,6 +54,9 @@ impl EventHandler for Handler {
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_list_spells") {
                                 let embed = commands::list_spells::create_list_spells_embed(&content);
+                                message.add_embed(embed)
+                            } else if content.as_str().contains("command_create_magic_item") {
+                                let embed = commands::create_magic_item::create_magic_item_embed(&content);
                                 message.add_embed(embed)
                             } else {
                                 message.content(content)
@@ -87,6 +91,7 @@ impl EventHandler for Handler {
         let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::welcome::register(command))
+                .create_application_command(|command| commands::create_magic_item::register(command))
                 //.create_application_command(|command| commands::create_spell::register(command))
                 //.create_application_command(|command| commands::list_spells::register(command))
         }).await;
