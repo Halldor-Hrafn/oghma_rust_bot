@@ -1,6 +1,8 @@
 pub mod ping;
 pub mod welcome;
 
+pub mod roll;
+
 pub mod create_spell;
 pub mod create_magic_item;
 

@@ -38,6 +38,7 @@ impl EventHandler for Handler {
             let content = match command.data.name.as_str() {
                 "ping" => commands::ping::run(&command),
                 "welcome" => commands::welcome::run(&command),
+                "roll" => commands::roll::run(&command),
                 "create_spell" => commands::create_spell::run(&command).await,
                 "create_magic_item" => commands::create_magic_item::run(&command).await,
                 "list_spells" => commands::list_spells::run(&command).await,
@@ -95,6 +96,7 @@ impl EventHandler for Handler {
         let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
                 .create_application_command(|command| commands::welcome::register(command))
+                .create_application_command(|command| commands::roll::register(command))
                 .create_application_command(|command| commands::create_magic_item::register(command))
                 .create_application_command(|command| commands::list_magic_items::register(command))
                 //.create_application_command(|command| commands::create_spell::register(command))
