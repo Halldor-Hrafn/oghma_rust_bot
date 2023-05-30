@@ -144,6 +144,22 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY")
         .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
+    let resp_1 = postgrest_client
+        .from("spells")
+        .select("*")
+        .eq("name", name)
+        .eq("guild_id", guild_id)
+        .eq("user_id", user_id)
+        .execute()
+        .await;
+
+    if let Ok(resp) = resp_1 {
+        let body = resp.text().await.unwrap();
+        if body != "[]" {
+            return "The spell you wanted to make already exists".to_string();
+        }
+    }
+
     let resp = postgrest_client
         .from("spells")
         .insert(json!(spell_data).to_string())
@@ -233,26 +249,6 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
                 .required(true)
         })
 }
-
-// pub fn create_spell_embed(data: &str) -> builder::CreateEmbed {
-//     let data: Data = serde_json::from_str(data).unwrap();
-
-//     let embed = CreateEmbed::default()
-//         .title("Spell created")
-//         .description(format!("Spell {} has been created!", data.spells.name))
-//         .field("Name", data.spells.name, true)
-//         .field("Level", data.spells.level, true)
-//         .field("Cast Time", data.spells.cast_time, true)
-//         .field("Range", data.spells.range, true)
-//         .field("Components", data.spells.components, true)
-//         .field("Duration", data.spells.duration, true)
-//         .field("School", data.spells.school, true)
-//         .field("Attack/Save", data.spells.attack_save, true)
-//         .field("Damage/Effect", data.spells.damage_effect, true)
-//         .to_owned();
-
-//     embed
-// }
 
 pub fn create_spell_embed(data: &str) -> builder::CreateEmbed {
     let data: Data = serde_json::from_str(data).unwrap();
