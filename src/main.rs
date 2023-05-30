@@ -101,10 +101,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::roll::register(command))
                 .create_application_command(|command| commands::create_magic_item::register(command))
                 .create_application_command(|command| commands::list_magic_items::register(command))
-                .create_application_command(|command| commands::remove_spell::register(command))
                 .create_application_command(|command| commands::remove_magic_item::register(command))
-                //.create_application_command(|command| commands::create_spell::register(command))
-                //.create_application_command(|command| commands::list_spells::register(command))
         }).await;
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
@@ -114,6 +111,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::ping::register(command))
                 .create_application_command(|command| commands::create_spell::register(command))
                 .create_application_command(|command| commands::list_spells::register(command))
+                .create_application_command(|command| commands::remove_spell::register(command))
         }).await;
 
         colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
