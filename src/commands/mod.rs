@@ -8,3 +8,5 @@ pub mod create_magic_item;
 
 pub mod list_spells;
 pub mod list_magic_items;
+
+pub mod remove_spell;

@@ -43,6 +43,7 @@ impl EventHandler for Handler {
                 "create_magic_item" => commands::create_magic_item::run(&command).await,
                 "list_spells" => commands::list_spells::run(&command).await,
                 "list_magic_items" => commands::list_magic_items::run(&command).await,
+                "remove_spell" => commands::remove_spell::run(&command).await,
                 _ => "Unknown command".to_string(),
             };
 
@@ -99,6 +100,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::roll::register(command))
                 .create_application_command(|command| commands::create_magic_item::register(command))
                 .create_application_command(|command| commands::list_magic_items::register(command))
+                .create_application_command(|command| commands::remove_spell::register(command))
                 //.create_application_command(|command| commands::create_spell::register(command))
                 //.create_application_command(|command| commands::list_spells::register(command))
         }).await;
