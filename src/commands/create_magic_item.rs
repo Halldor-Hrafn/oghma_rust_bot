@@ -124,6 +124,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> & mut builde
     command
         .name("create_magic_item")
         .description("Creates a new magic item")
+        .dm_permission(false)
         .create_option(|option| {
             option
                 .name("name")

@@ -69,6 +69,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
     command
         .name("list_spells")
         .description("List all spells you or someone else created in this server")
+        .dm_permission(false)
         .create_option(|option| {
             option
                 .name("user")

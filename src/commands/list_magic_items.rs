@@ -67,6 +67,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
     command
         .name("list_magic_items")
         .description("List all magic items you or someone else created in this server")
+        .dm_permission(false)
         .create_option(|option| {
             option
                 .name("user")

@@ -168,6 +168,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
     command
         .name("create_spell")
         .description("Creates a new spell.")
+        .dm_permission(false)
         .create_option(|option| {
             option
                 .name("name")
