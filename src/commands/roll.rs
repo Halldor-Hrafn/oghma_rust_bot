@@ -21,16 +21,17 @@ pub fn run(command: &ApplicationCommandInteraction) -> String {
 
     let dice = dice.split("d").collect::<Vec<&str>>();
 
-    println!("dice: {:#?}", dice);
-
-
-
-    let num_dice = if dice[0].is_empty() {
-        1
+    let (num_dice, num_sides) = if dice.len() == 1 {
+        (1, dice[0].parse::<i32>().unwrap())
     } else {
-        dice[0].parse::<i32>().unwrap()
+        let num_dice = if dice[0].is_empty() {
+            1
+        } else {
+            dice[0].parse::<i32>().unwrap()
+        };
+        let num_sides = dice[1].parse::<i32>().unwrap();
+        (num_dice, num_sides)
     };
-    let num_sides = dice[1].parse::<i32>().unwrap();
 
     let number = roll_dice(num_dice, num_sides);
 
