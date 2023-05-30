@@ -100,6 +100,22 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY")
         .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
+        let resp_1 = postgrest_client
+        .from("magic_items")
+        .select("*")
+        .eq("name", name)
+        .eq("guild_id", guild_id)
+        .eq("user_id", user_id)
+        .execute()
+        .await;
+
+    if let Ok(resp) = resp_1 {
+        let body = resp.text().await.unwrap();
+        if body != "[]" {
+            return "The magic item you wanted to make already exists".to_string();
+        }
+    }
+
     let resp = postgrest_client
         .from("magic_items")
         .insert(json!(&item_data).to_string())
