@@ -31,8 +31,17 @@ struct Data {
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
-    let user_id = command.user.id.to_string();
     let guild_id = command.guild_id.unwrap().to_string();
+
+    let user_id = command.user.id.to_string();
+
+    let user = if let Some(option) = command.data.options.iter().find(|option| option.name == "user") {
+        option.value.as_ref().unwrap().as_str().unwrap()
+    } else {
+        &user_id
+    };
+
+    println!("user: {:#?}", user);
 
     let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL")
         .expect(colorize_this("Expected a URL in the environment", Colors::RedFg).as_str()).as_str())
@@ -43,7 +52,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .from("spells")
         .select("*")
         .eq("guild_id", guild_id.as_str())
-        .eq("user_id", user_id.as_str())
+        .eq("user_id", user)
         .execute()
         .await;
 
@@ -55,7 +64,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
     let data = Data {
         command: "command_list_spells".to_string(),
-        user_id: user_id,
+        user_id: user.to_string(),
         guild_id: guild_id,
         spells: deserialized_spells_vec,
     };
@@ -85,7 +94,7 @@ pub fn create_list_spells_embed(content: &String) -> CreateEmbed {
     //copilot made the embed below
     // I have no fucking idea how it did it, but it works, so I won't complain.
     CreateEmbed::default()
-        .title("Spell Created")
+        .title("Spells Created")
         .description(format!("A list of spells created by: <@{}> in this guild", data.user_id))
         .fields(data.spells.iter().map(|spell| {
             (spell.name.clone(), format!("Level: {}\nCast Time: {}\nRange: {}\nComponents: {}\nDuration: {}\nSchool: {}\nAttack/Save: {}\nDamage/Effect: {}", spell.level, spell.cast_time, spell.range, spell.components, spell.duration, spell.school, spell.attack_save, spell.damage_effect), false)

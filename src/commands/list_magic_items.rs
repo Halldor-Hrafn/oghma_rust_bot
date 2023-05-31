@@ -29,8 +29,15 @@ struct Data {
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
-    let user_id = command.user.id.to_string();
     let guild_id = command.guild_id.unwrap().to_string();
+
+    let user_id = command.user.id.to_string();
+
+    let user = if let Some(option) = command.data.options.iter().find(|option| option.name == "user") {
+        option.value.as_ref().unwrap().as_str().unwrap()
+    } else {
+        &user_id
+    };
 
     let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL")
         .expect(colorize_this("Expected a URL in the environment", Colors::RedFg).as_str()).as_str())
@@ -53,7 +60,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
     let data = Data {
         command: "command_list_magic_items".to_string(),
-        user_id: user_id,
+        user_id: user.to_string(),
         guild_id: guild_id,
         magic_items: deserialized_magic_items_vec,
     };
