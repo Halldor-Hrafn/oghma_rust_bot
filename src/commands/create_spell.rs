@@ -139,9 +139,9 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         user_id: user_id.to_owned(),
     };
 
-    let postgrest_client = Postgrest::new(std::env::var("SUPABASE_URL")
+    let postgrest_client = Postgrest::new(std::env::var("POSTGREST_URL")
         .expect(colorize_this("Expected a URL in the environment", Colors::RedFg).as_str()).as_str())
-        .insert_header("apikey", std::env::var("SUPABASE_PUBLIC_KEY")
+        .insert_header("apikey", std::env::var("POSTGREST_PUBLIC_KEY")
         .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
     let resp_1 = postgrest_client
