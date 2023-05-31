@@ -41,6 +41,7 @@ impl EventHandler for Handler {
                 "roll" => commands::roll::run(&command),
                 "create_spell" => commands::create_spell::run(&command).await,
                 "create_magic_item" => commands::create_magic_item::run(&command).await,
+                "create_monster" => commands::create_monster::run(&command).await,
                 "list_spells" => commands::list_spells::run(&command).await,
                 "list_magic_items" => commands::list_magic_items::run(&command).await,
                 "remove_spell" => commands::remove_spell::run(&command).await,
@@ -102,6 +103,7 @@ impl EventHandler for Handler {
                 .create_application_command(|command| commands::create_magic_item::register(command))
                 .create_application_command(|command| commands::list_magic_items::register(command))
                 .create_application_command(|command| commands::remove_magic_item::register(command))
+                .create_application_command(|command| commands::create_monster::register(command))
         }).await;
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
