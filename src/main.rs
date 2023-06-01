@@ -1,10 +1,10 @@
 mod commands;
 
+use serenity::model::application::interaction::application_command::ApplicationCommandInteraction;
 use serenity::{async_trait};
 use serenity::{prelude::*};
 
 use serenity::model::prelude::*;
-use serenity::model::application::command::Command;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
@@ -18,6 +18,8 @@ use serenity::framework::standard::{
     }
 };
 
+use std::error::Error;
+
 use dotenv::dotenv;
 use std::env;
 
@@ -29,28 +31,32 @@ struct General;
 
 struct Handler;
 
+async fn handle_command(command: &ApplicationCommandInteraction) -> String {
+    match command.data.name.as_str() {
+        "help" => commands::help::run(&command),
+        "ping" => commands::ping::run(&command),
+        "welcome" => commands::welcome::run(&command),
+        "roll" => commands::roll::run(&command),
+        "create_spell" => commands::create_spell::run(&command).await,
+        "create_magic_item" => commands::create_magic_item::run(&command).await,
+        "create_monster" => commands::create_monster::run(&command).await,
+        "list_spells" => commands::list_spells::run(&command).await,
+        "list_spell" => commands::list_spell::run(&command).await,
+        "list_magic_items" => commands::list_magic_items::run(&command).await,
+        "list_magic_item" => commands::list_magic_item::run(&command).await,
+        "remove_spell" => commands::remove_spell::run(&command).await,
+        "remove_magic_item" => commands::remove_magic_item::run(&command).await,
+        _ => "Unknown command".to_string(),
+    }
+}
+
 #[async_trait]
 impl EventHandler for Handler {
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::ApplicationCommand(command) = interaction {
             colorize_println(format!("Got command: {:?}", command.data.name), Colors::YellowFg);
 
-            let content = match command.data.name.as_str() {
-                "help" => commands::help::run(&command),
-                "ping" => commands::ping::run(&command),
-                "welcome" => commands::welcome::run(&command),
-                "roll" => commands::roll::run(&command),
-                "create_spell" => commands::create_spell::run(&command).await,
-                "create_magic_item" => commands::create_magic_item::run(&command).await,
-                "create_monster" => commands::create_monster::run(&command).await,
-                "list_spells" => commands::list_spells::run(&command).await,
-                "list_spell" => commands::list_spell::run(&command).await,
-                "list_magic_items" => commands::list_magic_items::run(&command).await,
-                "list_magic_item" => commands::list_magic_item::run(&command).await,
-                "remove_spell" => commands::remove_spell::run(&command).await,
-                "remove_magic_item" => commands::remove_magic_item::run(&command).await,
-                _ => "Unknown command".to_string(),
-            };
+            let content = handle_command(&command).await;
 
             if let Err(why) = command
                 .create_interaction_response(&ctx.http, |response| {
