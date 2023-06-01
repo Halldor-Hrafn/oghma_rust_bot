@@ -83,6 +83,22 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
                 .required(false)
         })
 }
+
+// pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
+//     let data: Data = serde_json::from_str(content).unwrap();
+
+//     CreateEmbed::default()
+//         .title("Magic Items created")
+//         .description(format!("Magic Items created by <@{}>", data.user_id))
+//         .fields(data.magic_items.iter().map(|magic_item| {
+//             (
+//                 magic_item.name.clone(),
+//                 format!("Rarity: {}\nType: {}\nDescription: {}\nAttunement: {}", magic_item.rarity, magic_item.type_, magic_item.description, magic_item.attunement),
+//                 false
+//             )
+//         }).collect::<Vec<(String, String, bool)>>()).to_owned()
+// }
+
 pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
     let data: Data = serde_json::from_str(content).unwrap();
 
@@ -92,7 +108,7 @@ pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
         .fields(data.magic_items.iter().map(|magic_item| {
             (
                 magic_item.name.clone(),
-                format!("Rarity: {}\nType: {}\nDescription: {}\nAttunement: {}", magic_item.rarity, magic_item.type_, magic_item.description, magic_item.attunement),
+                "".to_owned(),
                 false
             )
         }).collect::<Vec<(String, String, bool)>>()).to_owned()
