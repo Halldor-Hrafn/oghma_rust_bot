@@ -137,7 +137,7 @@ async fn main() {
         .configure(|c| c.prefix("~"))
         .group(&GENERAL_GROUP);
 
-    let token = env::var("DISCORD_DEV_TOKEN")
+    let token = env::var("DISCORD_TOKEN")
         .expect(colorize_this("Expected a token in the environment", Colors::RedFg).as_str());
     let intents = GatewayIntents::all();
 
