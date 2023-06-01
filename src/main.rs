@@ -104,14 +104,14 @@ impl EventHandler for Handler {
                 .expect(colorize_this("Guild id is not a valid id", Colors::RedFg).as_str())
         );
 
-        let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
-            commands
-                .create_application_command(|command| commands::welcome::register(command))
-                .create_application_command(|command| commands::roll::register(command))
-                .create_application_command(|command| commands::create_monster::register(command))
-        }).await;
+        // let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
+        //     commands
+        //         .create_application_command(|command| commands::welcome::register(command))
+        //         .create_application_command(|command| commands::roll::register(command))
+        //         .create_application_command(|command| commands::create_monster::register(command))
+        // }).await;
 
-        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
+        // colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
 
         let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
             commands
