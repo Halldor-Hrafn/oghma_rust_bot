@@ -36,6 +36,7 @@ impl EventHandler for Handler {
             colorize_println(format!("Got command: {:?}", command.data.name), Colors::YellowFg);
 
             let content = match command.data.name.as_str() {
+                "help" => commands::help::run(&command),
                 "ping" => commands::ping::run(&command),
                 "welcome" => commands::welcome::run(&command),
                 "roll" => commands::roll::run(&command),
@@ -74,6 +75,9 @@ impl EventHandler for Handler {
                             } else if content.as_str().contains("command_list_magic_item") {
                                 let embed = commands::list_magic_item::create_list_magic_item_embed(&content);
                                 message.add_embed(embed)
+                            } else if content.as_str().contains("command_help") {
+                                let embed = commands::help::create_help_embed(&content);
+                                message.add_embed(embed)
                             } else {
                                 message.content(content)
                             }
@@ -87,6 +91,10 @@ impl EventHandler for Handler {
     }
 
     async fn message(&self, ctx: Context, msg: Message) {
+        if msg.author.bot {
+            return;
+        }
+
         if msg.content == "ping" {
             if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
                 colorize_println(format!("Error sending message: {:?}", why), Colors::RedFg)
@@ -104,14 +112,15 @@ impl EventHandler for Handler {
                 .expect(colorize_this("Guild id is not a valid id", Colors::RedFg).as_str())
         );
 
-        let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
-            commands
-                // .create_application_command(|command| commands::welcome::register(command))
-                .create_application_command(|command| commands::roll::register(command))
-                // .create_application_command(|command| commands::create_monster::register(command))
-        }).await;
+        // let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
+        //     commands
+        //         .create_application_command(|command| commands::help::register(command))
+        //         .create_application_command(|command| commands::welcome::register(command))
+        //         .create_application_command(|command| commands::roll::register(command))
+        //         .create_application_command(|command| commands::create_monster::register(command))
+        // }).await;
 
-        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
+        // colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
 
         // let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
         //     commands
