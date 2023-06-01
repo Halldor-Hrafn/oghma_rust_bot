@@ -183,12 +183,11 @@ pub fn create_magic_item_embed(data: &str) -> builder::CreateEmbed {
     let magic_item = &data.magic_items;
 
     CreateEmbed::default()
-        .title(format!("Magic Item: {}", magic_item.name))
-        .description(format!("Magic item *{}* has been created!", magic_item.name))
+        .title(format!("Magic Item *{}* has been created!", magic_item.name))
+        .description(format!("{}", magic_item.description))
         .field("Name", magic_item.name.as_str(), false)
         .field("Rarity", magic_item.rarity.as_str(), false)
         .field("Type", magic_item.type_.as_str(), false)
-        .field("Description", magic_item.description.as_str(), false)
         .field("Attunement", magic_item.attunement.as_str(), false)
         .color(0x00ff00)
         .to_owned()

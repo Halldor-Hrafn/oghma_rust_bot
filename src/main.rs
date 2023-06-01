@@ -43,7 +43,9 @@ impl EventHandler for Handler {
                 "create_magic_item" => commands::create_magic_item::run(&command).await,
                 "create_monster" => commands::create_monster::run(&command).await,
                 "list_spells" => commands::list_spells::run(&command).await,
+                "list_spell" => commands::list_spell::run(&command).await,
                 "list_magic_items" => commands::list_magic_items::run(&command).await,
+                "list_magic_item" => commands::list_magic_item::run(&command).await,
                 "remove_spell" => commands::remove_spell::run(&command).await,
                 "remove_magic_item" => commands::remove_magic_item::run(&command).await,
                 _ => "Unknown command".to_string(),
@@ -60,11 +62,17 @@ impl EventHandler for Handler {
                             } else if content.as_str().contains("command_list_spells") {
                                 let embed = commands::list_spells::create_list_spells_embed(&content);
                                 message.add_embed(embed)
+                            } else if content.as_str().contains("command_list_spell") {
+                                let embed = commands::list_spell::create_list_spell_embed(&content);
+                                message.add_embed(embed)
                             } else if content.as_str().contains("command_create_magic_item") {
                                 let embed = commands::create_magic_item::create_magic_item_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_list_magic_items") {
                                 let embed = commands::list_magic_items::create_list_magic_items_embed(&content);
+                                message.add_embed(embed)
+                            } else if content.as_str().contains("command_list_magic_item") {
+                                let embed = commands::list_magic_item::create_list_magic_item_embed(&content);
                                 message.add_embed(embed)
                             } else {
                                 message.content(content)
@@ -98,25 +106,27 @@ impl EventHandler for Handler {
 
         let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
-                .create_application_command(|command| commands::welcome::register(command))
-                .create_application_command(|command| commands::roll::register(command))
-                .create_application_command(|command| commands::create_magic_item::register(command))
-                .create_application_command(|command| commands::list_magic_items::register(command))
-                .create_application_command(|command| commands::remove_magic_item::register(command))
-                .create_application_command(|command| commands::create_monster::register(command))
+                // .create_application_command(|command| commands::welcome::register(command))
+                // .create_application_command(|command| commands::roll::register(command))
+                // .create_application_command(|command| commands::create_magic_item::register(command))
+                // .create_application_command(|command| commands::list_magic_items::register(command))
+                // .create_application_command(|command| commands::remove_magic_item::register(command))
+                // .create_application_command(|command| commands::create_monster::register(command))
+                // .create_application_command(|command| commands::list_magic_item::register(command))
+                // .create_application_command(|command| commands::list_spell::register(command))
         }).await;
 
-        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
+        // colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
 
-        let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
-            commands
-                .create_application_command(|command| commands::ping::register(command))
-                .create_application_command(|command| commands::create_spell::register(command))
-                .create_application_command(|command| commands::list_spells::register(command))
-                .create_application_command(|command| commands::remove_spell::register(command))
-        }).await;
+        // let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
+        //     commands
+        //         .create_application_command(|command| commands::ping::register(command))
+        //         .create_application_command(|command| commands::create_spell::register(command))
+        //         .create_application_command(|command| commands::list_spells::register(command))
+        //         .create_application_command(|command| commands::remove_spell::register(command))
+        // }).await;
 
-        colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
+        // colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
     }
 }
 
@@ -127,7 +137,7 @@ async fn main() {
         .configure(|c| c.prefix("~"))
         .group(&GENERAL_GROUP);
 
-    let token = env::var("DISCORD_TOKEN")
+    let token = env::var("DISCORD_DEV_TOKEN")
         .expect(colorize_this("Expected a token in the environment", Colors::RedFg).as_str());
     let intents = GatewayIntents::all();
 
@@ -146,6 +156,14 @@ async fn main() {
 #[command]
 async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
     msg.channel_id.say(&ctx.http, "Pong!").await?;
+
+    Ok(())
+}
+
+#[command]
+async fn test(ctx: &Context, msg: &Message) -> CommandResult {
+    colorize_println(format!("{}", msg.content), Colors::GreenFg);
+    msg.channel_id.say(&ctx.http, "Test!").await?;
 
     Ok(())
 }

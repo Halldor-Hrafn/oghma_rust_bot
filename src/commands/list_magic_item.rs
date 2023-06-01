@@ -23,9 +23,7 @@ struct MagicItemData {
 #[derive(Serialize, Deserialize)]
 struct Data {
     command: String,
-    user_id: String,
-    guild_id: String,
-    magic_items: Vec<MagicItemData>,
+    magic_items: Vec<MagicItemData>
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
@@ -39,6 +37,16 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         &user_id
     };
 
+    let name = command.data.options
+        .iter()
+        .find(|option| option.name == "name")
+        .unwrap()
+        .value
+        .as_ref()
+        .unwrap()
+        .as_str()
+        .unwrap();
+
     let postgrest_client = Postgrest::new(std::env::var("POSTGREST_URL")
         .expect(colorize_this("Expected a URL in the environment", Colors::RedFg).as_str()).as_str())
         .insert_header("apikey", std::env::var("POSTGREST_PUBLIC_KEY")
@@ -48,7 +56,8 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .from("magic_items")
         .select("*")
         .eq("guild_id", guild_id.as_str())
-        .eq("user_id", user_id.as_str())
+        .eq("user_id", user)
+        .eq("name", name)
         .execute()
         .await;
 
@@ -59,22 +68,27 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let deserialized_magic_items_vec: Vec<MagicItemData> = serde_json::from_str(&body).unwrap();
 
     let data = Data {
-        command: "command_list_magic_items".to_string(),
-        user_id: user.to_string(),
-        guild_id: guild_id,
+        command: "command_list_magic_item".to_string(),
         magic_items: deserialized_magic_items_vec,
     };
 
-    let data_json: String = serde_json::to_string(&data).unwrap();
+    let data_json = serde_json::to_string(&data).unwrap();
 
     data_json
 }
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
-        .name("list_magic_items")
-        .description("List all magic items you or someone else created in this server")
+        .name("list_magic_item")
+        .description("Lists one magic item")
         .dm_permission(false)
+        .create_option(|option| {
+            option
+                .name("name")
+                .description("The name for the magic item")
+                .kind(CommandOptionType::String)
+                .required(true)
+        })
         .create_option(|option| {
             option
                 .name("user")
@@ -84,32 +98,15 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-// pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
-//     let data: Data = serde_json::from_str(content).unwrap();
-
-//     CreateEmbed::default()
-//         .title("Magic Items created")
-//         .description(format!("Magic Items created by <@{}>", data.user_id))
-//         .fields(data.magic_items.iter().map(|magic_item| {
-//             (
-//                 magic_item.name.clone(),
-//                 format!("Rarity: {}\nType: {}\nDescription: {}\nAttunement: {}", magic_item.rarity, magic_item.type_, magic_item.description, magic_item.attunement),
-//                 false
-//             )
-//         }).collect::<Vec<(String, String, bool)>>()).to_owned()
-// }
-
-pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
-    let data: Data = serde_json::from_str(content).unwrap();
+pub fn create_list_magic_item_embed(data: &str) -> builder::CreateEmbed {
+    let data: Data = serde_json::from_str(data).unwrap();
+    let magic = &data.magic_items[0];
 
     CreateEmbed::default()
-        .title("Magic Items created")
-        .description(format!("Magic Items created by <@{}>", data.user_id))
-        .fields(data.magic_items.iter().map(|magic_item| {
-            (
-                magic_item.name.clone(),
-                "".to_owned(),
-                false
-            )
-        }).collect::<Vec<(String, String, bool)>>()).to_owned()
+        .title(magic.name.to_owned())
+        .description(magic.description.to_owned())
+        .field("Rarity", magic.rarity.to_owned(), false)
+        .field("Type", magic.type_.to_owned(), false)
+        .field("Attunement", magic.attunement.to_owned().to_string(), false)
+        .to_owned()
 }

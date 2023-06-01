@@ -66,7 +66,7 @@ struct MonsterData {
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
-    println!("data: {:#?}", command.data);
+    colorize_println(format!("data: {:#?}", command.data), Colors::BlueFg);
 
     "TODO".to_string()
 }
