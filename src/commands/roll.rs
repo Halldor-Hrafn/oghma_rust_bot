@@ -18,23 +18,9 @@ pub fn run(command: &ApplicationCommandInteraction) -> String {
         .as_str()
         .unwrap();
 
-    let dice = dice.split("d").collect::<Vec<&str>>();
+    let result = roll_dice(dice);
 
-    let (num_dice, num_sides) = if dice.len() == 1 {
-        (1, dice[0].parse::<i32>().unwrap())
-    } else {
-        let num_dice = if dice[0].is_empty() {
-            1
-        } else {
-            dice[0].parse::<i32>().unwrap()
-        };
-        let num_sides = dice[1].parse::<i32>().unwrap();
-        (num_dice, num_sides)
-    };
-
-    let number = roll_dice(num_dice, num_sides);
-
-    number.to_string()
+    result.to_string()
 }
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
@@ -50,11 +36,23 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-fn roll_dice(num_dice: i32, num_sides: i32) -> i32 {
+fn roll_dice(dice: &str) -> i32 {
     let mut rng = rand::thread_rng();
     let mut sum = 0;
-    for _ in 0..num_dice {
-        sum += rng.gen_range(1..num_sides + 1);
+
+    for die in dice.split("+") {
+        let parts: Vec<&str> = die.trim().split("d").collect();
+        let num_dice = if parts[0].is_empty() {
+            1
+        } else {
+            parts[0].parse::<i32>().unwrap()
+        };
+        let num_sides = parts[1].parse::<i32>().unwrap();
+
+        for _ in 0..num_dice {
+            sum += rng.gen_range(1..num_sides + 1);
+        }
     }
+
     sum
 }

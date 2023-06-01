@@ -104,29 +104,29 @@ impl EventHandler for Handler {
                 .expect(colorize_this("Guild id is not a valid id", Colors::RedFg).as_str())
         );
 
-        // let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
-        //     commands
-        //         .create_application_command(|command| commands::welcome::register(command))
-        //         .create_application_command(|command| commands::roll::register(command))
-        //         .create_application_command(|command| commands::create_monster::register(command))
-        // }).await;
-
-        // colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
-
-        let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
+        let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
             commands
-                .create_application_command(|command| commands::ping::register(command))
-                .create_application_command(|command| commands::create_spell::register(command))
-                .create_application_command(|command| commands::list_spells::register(command))
-                .create_application_command(|command| commands::list_spell::register(command))
-                .create_application_command(|command| commands::remove_spell::register(command))
-                .create_application_command(|command| commands::create_magic_item::register(command))
-                .create_application_command(|command| commands::list_magic_items::register(command))
-                .create_application_command(|command| commands::list_magic_item::register(command))
-                .create_application_command(|command| commands::remove_magic_item::register(command))
+                // .create_application_command(|command| commands::welcome::register(command))
+                .create_application_command(|command| commands::roll::register(command))
+                // .create_application_command(|command| commands::create_monster::register(command))
         }).await;
 
-        colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
+        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
+
+        // let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
+        //     commands
+        //         .create_application_command(|command| commands::ping::register(command))
+        //         .create_application_command(|command| commands::create_spell::register(command))
+        //         .create_application_command(|command| commands::list_spells::register(command))
+        //         .create_application_command(|command| commands::list_spell::register(command))
+        //         .create_application_command(|command| commands::remove_spell::register(command))
+        //         .create_application_command(|command| commands::create_magic_item::register(command))
+        //         .create_application_command(|command| commands::list_magic_items::register(command))
+        //         .create_application_command(|command| commands::list_magic_item::register(command))
+        //         .create_application_command(|command| commands::remove_magic_item::register(command))
+        // }).await;
+
+        // colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
     }
 }
 
@@ -137,7 +137,7 @@ async fn main() {
         .configure(|c| c.prefix("~"))
         .group(&GENERAL_GROUP);
 
-    let token = env::var("DISCORD_TOKEN")
+    let token = env::var("DISCORD_DEV_TOKEN")
         .expect(colorize_this("Expected a token in the environment", Colors::RedFg).as_str());
     let intents = GatewayIntents::all();
 
