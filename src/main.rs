@@ -32,20 +32,39 @@ struct General;
 struct Handler;
 
 async fn handle_command(command: &ApplicationCommandInteraction) -> String {
+    // match command.data.name.as_str() {
+    //     "help" => commands::help::run(&command),
+    //     "ping" => commands::ping::run(&command),
+    //     "welcome" => commands::welcome::run(&command),
+    //     "roll" => commands::roll::run(&command),
+    //     "create_spell" => commands::create::spell::run(&command).await,
+    //     "create_magic_item" => commands::create::magic_item::run(&command).await,
+    //     "create_monster" => commands::create::monster::run(&command).await,
+    //     "list_spells" => commands::list_spells::run(&command).await,
+    //     "list_spell" => commands::list_spell::run(&command).await,
+    //     "list_magic_items" => commands::list_magic_items::run(&command).await,
+    //     "list_magic_item" => commands::list_magic_item::run(&command).await,
+    //     "remove_spell" => commands::remove_spell::run(&command).await,
+    //     "remove_magic_item" => commands::remove_magic_item::run(&command).await,
+    //     _ => "Unknown command".to_string(),
+    // }
+
     match command.data.name.as_str() {
         "help" => commands::help::run(&command),
         "ping" => commands::ping::run(&command),
-        "welcome" => commands::welcome::run(&command),
         "roll" => commands::roll::run(&command),
-        "create_spell" => commands::create_spell::run(&command).await,
-        "create_magic_item" => commands::create_magic_item::run(&command).await,
-        "create_monster" => commands::create_monster::run(&command).await,
-        "list_spells" => commands::list_spells::run(&command).await,
-        "list_spell" => commands::list_spell::run(&command).await,
-        "list_magic_items" => commands::list_magic_items::run(&command).await,
-        "list_magic_item" => commands::list_magic_item::run(&command).await,
-        "remove_spell" => commands::remove_spell::run(&command).await,
-        "remove_magic_item" => commands::remove_magic_item::run(&command).await,
+        // spell commands
+        "create_spell" => commands::create::spell::run(&command).await,
+        "list_spells" => commands::list::spells::run(&command).await,
+        "list_spell" => commands::list::spell::run(&command).await,
+        "remove_spell" => commands::remove::spell::run(&command).await,
+        // magic item commands
+        "create_magic_item" => commands::create::magic_item::run(&command).await,
+        "list_magic_items" => commands::list::magic_items::run(&command).await,
+        "list_magic_item" => commands::list::magic_item::run(&command).await,
+        "remove_magic_item" => commands::remove::magic_item::run(&command).await,
+        // monster commands
+        "create_monster" => commands::create::monster::run(&command).await,
         _ => "Unknown command".to_string(),
     }
 }
@@ -64,26 +83,31 @@ impl EventHandler for Handler {
                         .kind(InteractionResponseType::ChannelMessageWithSource)
                         .interaction_response_data(|message| {
                             if content.as_str().contains("command_create_spells") {
-                                let embed = commands::create_spell::create_spell_embed(&content);
+                                let embed = commands::create::spell::create_spell_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_list_spells") {
-                                let embed = commands::list_spells::create_list_spells_embed(&content);
+                                let embed = commands::list::spells::create_list_spells_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_list_spell") {
-                                let embed = commands::list_spell::create_list_spell_embed(&content);
+                                let embed = commands::list::spell::create_list_spell_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_create_magic_item") {
-                                let embed = commands::create_magic_item::create_magic_item_embed(&content);
+                                let embed = commands::create::magic_item::create_magic_item_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_list_magic_items") {
-                                let embed = commands::list_magic_items::create_list_magic_items_embed(&content);
+                                let embed = commands::list::magic_items::create_list_magic_items_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_list_magic_item") {
-                                let embed = commands::list_magic_item::create_list_magic_item_embed(&content);
+                                let embed = commands::list::magic_item::create_list_magic_item_embed(&content);
                                 message.add_embed(embed)
                             } else if content.as_str().contains("command_help") {
                                 let embed = commands::help::create_help_embed(&content);
                                 message.add_embed(embed)
+                            } else if content.as_str().contains("command_create_monster") {
+                                let embed = commands::create::monster::create_monster_embed(&content);
+                                let second_embed = commands::create::monster::create_second_embed();
+                                message.add_embed(embed)
+                                    .add_embed(second_embed)
                             } else {
                                 message.content(content)
                             }
@@ -118,15 +142,15 @@ impl EventHandler for Handler {
                 .expect(colorize_this("Guild id is not a valid id", Colors::RedFg).as_str())
         );
 
-        // let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
-        //     commands
-        //         .create_application_command(|command| commands::help::register(command))
-        //         .create_application_command(|command| commands::welcome::register(command))
-        //         .create_application_command(|command| commands::roll::register(command))
-        //         .create_application_command(|command| commands::create_monster::register(command))
-        // }).await;
+        let _commands = GuildId::set_application_commands(&guild_id, &ctx.http, |commands| {
+            commands
+                // .create_application_command(|command| commands::help::register(command))
+                // .create_application_command(|command| commands::welcome::register(command))
+                // .create_application_command(|command| commands::roll::register(command))
+                .create_application_command(|command| commands::create::monster::register(command))
+        }).await;
 
-        // colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
+        colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
 
         // let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
         //     commands
