@@ -21,3 +21,5 @@ pub mod list;
 // pub mod remove_magic_item;
 
 pub mod remove;
+
+pub mod add;

@@ -65,6 +65,8 @@ async fn handle_command(command: &ApplicationCommandInteraction) -> String {
         "remove_magic_item" => commands::remove::magic_item::run(&command).await,
         // monster commands
         "create_monster" => commands::create::monster::run(&command).await,
+        // add commands
+        "add_speed" => commands::add::speed::run(&command).await,
         _ => "Unknown command".to_string(),
     }
 }
@@ -147,7 +149,8 @@ impl EventHandler for Handler {
                 // .create_application_command(|command| commands::help::register(command))
                 // .create_application_command(|command| commands::welcome::register(command))
                 // .create_application_command(|command| commands::roll::register(command))
-                .create_application_command(|command| commands::create::monster::register(command))
+                //.create_application_command(|command| commands::create::monster::register(command))
+                .create_application_command(|command| commands::add::speed::register(command))
         }).await;
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
