@@ -5,6 +5,7 @@ use serenity::{async_trait};
 use serenity::{prelude::*};
 
 use serenity::model::prelude::*;
+use serenity::model::application::command::Command;
 use serenity::model::application::interaction::{Interaction, InteractionResponseType};
 use serenity::model::gateway::Ready;
 use serenity::model::id::GuildId;
@@ -32,23 +33,6 @@ struct General;
 struct Handler;
 
 async fn handle_command(command: &ApplicationCommandInteraction) -> String {
-    // match command.data.name.as_str() {
-    //     "help" => commands::help::run(&command),
-    //     "ping" => commands::ping::run(&command),
-    //     "welcome" => commands::welcome::run(&command),
-    //     "roll" => commands::roll::run(&command),
-    //     "create_spell" => commands::create::spell::run(&command).await,
-    //     "create_magic_item" => commands::create::magic_item::run(&command).await,
-    //     "create_monster" => commands::create::monster::run(&command).await,
-    //     "list_spells" => commands::list_spells::run(&command).await,
-    //     "list_spell" => commands::list_spell::run(&command).await,
-    //     "list_magic_items" => commands::list_magic_items::run(&command).await,
-    //     "list_magic_item" => commands::list_magic_item::run(&command).await,
-    //     "remove_spell" => commands::remove_spell::run(&command).await,
-    //     "remove_magic_item" => commands::remove_magic_item::run(&command).await,
-    //     _ => "Unknown command".to_string(),
-    // }
-
     match command.data.name.as_str() {
         "help" => commands::help::run(&command),
         "ping" => commands::ping::run(&command),
@@ -169,20 +153,23 @@ impl EventHandler for Handler {
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);
 
-        // let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
-        //     commands
-        //         .create_application_command(|command| commands::ping::register(command))
-        //         .create_application_command(|command| commands::create_spell::register(command))
-        //         .create_application_command(|command| commands::list_spells::register(command))
-        //         .create_application_command(|command| commands::list_spell::register(command))
-        //         .create_application_command(|command| commands::remove_spell::register(command))
-        //         .create_application_command(|command| commands::create_magic_item::register(command))
-        //         .create_application_command(|command| commands::list_magic_items::register(command))
-        //         .create_application_command(|command| commands::list_magic_item::register(command))
-        //         .create_application_command(|command| commands::remove_magic_item::register(command))
-        // }).await;
+        let _global_commands = Command::set_global_application_commands(&ctx.http, |commands| {
+            commands
+                .create_application_command(|command| commands::help::register(command))
+                .create_application_command(|command| commands::ping::register(command))
+                // spell commands
+                .create_application_command(|command| commands::create::spell::register(command))
+                .create_application_command(|command| commands::list::spells::register(command))
+                .create_application_command(|command| commands::list::spell::register(command))
+                .create_application_command(|command| commands::remove::spell::register(command))
+                // magic item commands
+                .create_application_command(|command| commands::create::magic_item::register(command))
+                .create_application_command(|command| commands::list::magic_items::register(command))
+                .create_application_command(|command| commands::list::magic_item::register(command))
+                .create_application_command(|command| commands::remove::magic_item::register(command))
+        }).await;
 
-        // colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
+        colorize_println(format!("Registered global commands: {:#?}", _global_commands), Colors::CyanFg);
     }
 }
 
@@ -193,7 +180,7 @@ async fn main() {
         .configure(|c| c.prefix("~"))
         .group(&GENERAL_GROUP);
 
-    let token = env::var("DISCORD_DEV_TOKEN")
+    let token = env::var("DISCORD_TOKEN")
         .expect(colorize_this("Expected a token in the environment", Colors::RedFg).as_str());
     let intents = GatewayIntents::all();
 
