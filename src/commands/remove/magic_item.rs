@@ -53,6 +53,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
     command
         .name("remove_magic_item")
         .description("Removes a magic item")
+        .dm_permission(false)
         .create_option(|option| {
             option
                 .name("name")

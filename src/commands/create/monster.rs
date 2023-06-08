@@ -162,6 +162,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
     command
         .name("create_monster")
         .description("Creates a monster")
+        .dm_permission(false)
         .create_option(|option| {
             option
                 .name("name")
