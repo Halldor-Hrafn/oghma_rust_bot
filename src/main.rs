@@ -65,6 +65,8 @@ async fn handle_command(command: &ApplicationCommandInteraction) -> String {
         "remove_magic_item" => commands::remove::magic_item::run(&command).await,
         // monster commands
         "create_monster" => commands::create::monster::run(&command).await,
+        "list_monsters" => commands::list::monsters::run(&command).await,
+        "list_monster" => commands::list::monster::run(&command).await,
         // add commands
         "add_speed" => commands::add::speed::run(&command).await,
         _ => "Unknown command".to_string(),
@@ -83,7 +85,7 @@ impl EventHandler for Handler {
                 .create_interaction_response(&ctx.http, |response| {
                     response
                         .kind(InteractionResponseType::ChannelMessageWithSource)
-                        .interaction_response_data(|message| {
+                        .interaction_response_data(move |message| {
                             if content.as_str().contains("command_create_spells") {
                                 let embed = commands::create::spell::create_spell_embed(&content);
                                 message.add_embed(embed)
@@ -110,6 +112,15 @@ impl EventHandler for Handler {
                                 let second_embed = commands::create::monster::create_second_embed();
                                 message.add_embed(embed)
                                     .add_embed(second_embed)
+                            } else if content.as_str().contains("command_list_monsters") {
+                                let embed = commands::list::monsters::create_embed(&content);
+                                message.add_embed(embed)
+                            } else if content.as_str().contains("command_list_monster") {
+                                let base_embed = commands::list::monster::create_embed(&content);
+                                let speed_embed = commands::list::monster::create_speeds_embed(&content);
+                                message
+                                    .add_embed(base_embed)
+                                    .add_embed(speed_embed)
                             } else {
                                 message.content(content)
                             }
@@ -149,8 +160,11 @@ impl EventHandler for Handler {
                 // .create_application_command(|command| commands::help::register(command))
                 // .create_application_command(|command| commands::welcome::register(command))
                 // .create_application_command(|command| commands::roll::register(command))
-                //.create_application_command(|command| commands::create::monster::register(command))
-                .create_application_command(|command| commands::add::speed::register(command))
+                // .create_application_command(|command| commands::create::monster::register(command))
+                // .create_application_command(|command| commands::add::speed::register(command))
+                // .create_application_command(|command| commands::list::monsters::register(command))
+                // .create_application_command(|command| commands::list::spells::register(command))
+                // .create_application_command(|command| commands::list::monster::register(command))
         }).await;
 
         colorize_println(format!("Registered guild commands: {:#?}", _commands), Colors::CyanFg);

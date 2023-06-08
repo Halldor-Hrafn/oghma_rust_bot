@@ -9,30 +9,20 @@ use serde::{Serialize, Deserialize};
 
 use colorized::*;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct SpellData {
+#[derive(Serialize, Deserialize)]
+struct MonsterData {
     name: String,
-    level: String,
-    cast_time: String,
-    range: String,
-    components: String,
-    duration: String,
-    school: String,
-    attack_save: String,
-    damage_effect: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 struct Data {
     command: String,
     user_id: String,
-    guild_id: String,
-    spells: Vec<SpellData>,
+    monsters: Vec<MonsterData>
 }
 
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let guild_id = command.guild_id.unwrap().to_string();
-
     let user_id = command.user.id.to_string();
 
     let user = if let Some(option) = command.data.options.iter().find(|option| option.name == "user") {
@@ -47,8 +37,8 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .expect(colorize_this("Expected an API key in the environment", Colors::RedFg).as_str()).as_str());
 
     let resp = postgrest_client
-        .from("spells")
-        .select("*")
+        .from("monsters")
+        .select("name")
         .eq("guild_id", guild_id.as_str())
         .eq("user_id", user)
         .execute()
@@ -58,44 +48,42 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
     colorize_println(format!("body: {:#?}", body), Colors::BrightYellowFg);
 
-    let deserialized_spells_vec: Vec<SpellData> = serde_json::from_str(&body).unwrap();
+    let deserialized_monsters_vec: Vec<MonsterData> = serde_json::from_str(&body).unwrap();
 
     let data = Data {
-        command: "command_list_spells".to_string(),
+        command: "command_list_monsters".to_string(),
         user_id: user.to_string(),
-        guild_id: guild_id,
-        spells: deserialized_spells_vec,
+        monsters: deserialized_monsters_vec,
     };
 
-    let data_json: String = serde_json::to_string(&data).unwrap();
+    let json = serde_json::to_string(&data).unwrap();
 
-    data_json
+    json
 }
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
-        .name("list_spells")
-        .description("List all spells you or someone else created in this server")
-        .dm_permission(false)
+        .name("list_monsters")
+        .description("List monsters")
         .create_option(|option| {
             option
                 .name("user")
-                .description("User to list spells for")
+                .description("User to list monsters for")
                 .kind(CommandOptionType::User)
                 .required(false)
         })
 }
 
-pub fn create_list_spells_embed(content: &String) -> CreateEmbed {
+pub fn create_embed(content: &str) -> builder::CreateEmbed {
     let data: Data = serde_json::from_str(content).unwrap();
 
     CreateEmbed::default()
-        .title("Spells created")
-        .description(format!("Spells created by <@{}>", data.user_id))
-        .fields(data.spells.iter().map(|spell| {
+        .title("Monsters")
+        .description(format!("Monsters created by <@{}>", data.user_id))
+        .fields(data.monsters.iter().map(|monster| {
             (
-                spell.name.clone(),
-                "".to_owned(),
+                monster.name.clone(),
+                "".to_owned(), 
                 false
             )
         }).collect::<Vec<(String, String, bool)>>()).to_owned()

@@ -40,23 +40,23 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
         .unwrap()
         .as_str()
         .unwrap();
-    let speed = options
+    let proficiency = options
         .iter()
-        .find(|option| option.name == "speed")
-        .unwrap()
-        .value
-        .as_ref()
-        .unwrap()
-        .as_i64()
-        .unwrap();
-    let type_ = options
-        .iter()
-        .find(|option| option.name == "type")
+        .find(|option| option.name == "proficiency")
         .unwrap()
         .value
         .as_ref()
         .unwrap()
         .as_str()
+        .unwrap();
+    let value = options
+        .iter()
+        .find(|option| option.name == "value")
+        .unwrap()
+        .value
+        .as_ref()
+        .unwrap()
+        .as_i64()
         .unwrap();
 
     let postgrest_client = Postgrest::new(std::env::var("POSTGREST_URL")
@@ -77,33 +77,25 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
 
     let monster_id: Vec<MonsterId> = serde_json::from_str(monster_id.as_str()).unwrap();
 
-    let speed_id: i64 = type_.parse().unwrap();
-
-    let data = Data {
-        id_monster: monster_id[0].id,
-        id_speed: speed_id,
-        range: speed.to_string(),
-    };
+    let monster_id = monster_id[0].id;
 
     let resp_2 = postgrest_client
-        .from("monster_speeds")
-        .insert(json!(data).to_string())
+        .from("proficiencies")
+        .insert(json!({
+            "id_monster": monster_id,
+            "proficiency": proficiency,
+            "value": value,
+        }).to_string())
         .execute()
         .await;
 
-    let _body_2 = resp_2.unwrap().text().await.unwrap();
-
-    // println!("{}", _body_2);
-    // TODO: Fix this shit with the fact that the variable type_ is a number and not a string so it might display shit like "Gave a a speed of 50 2"
-    let response = format!("Gave {} a speed of {} {}", name, speed, type_).to_string();
-
-    response
+    "TODO".to_string()
 }
 
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
-        .name("add_speed")
-        .description("Add a speed to a monster")
+        .name("add_proficiency")
+        .description("Add a proficiency to a monster")
         .create_option(|option| {
             option
                 .name("name")
@@ -113,21 +105,16 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
         .create_option(|option| {
             option
-                .name("speed")
-                .description("The speed of the monster")
-                .kind(CommandOptionType::Integer)
+                .name("proficiency")
+                .description("The proficiency to add")
+                .kind(CommandOptionType::String)
                 .required(true)
         })
         .create_option(|option| {
             option
-                .name("type")
-                .description("The type of speed")
-                .kind(CommandOptionType::String)
+                .name("value")
+                .description("The value of the proficiency")
+                .kind(CommandOptionType::Integer)
                 .required(true)
-                .add_string_choice("walk", 1)
-                .add_string_choice("fly", 2)
-                .add_string_choice("swim", 3)
-                .add_string_choice("climb", 4)
-                .add_string_choice("burrow", 5)
         })
 }
