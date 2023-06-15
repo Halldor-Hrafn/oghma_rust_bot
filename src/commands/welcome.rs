@@ -2,6 +2,7 @@ use serenity::builder::CreateApplicationCommand;
 use serenity::model::prelude::command::CommandOptionType;
 use serenity::model::prelude::interaction::application_command::ApplicationCommandInteraction;
 
+#[allow(dead_code)]
 pub fn run(command: &ApplicationCommandInteraction) -> String {
     let options = &command.data.options;
     println!("{:#?}", &options);
@@ -9,6 +10,7 @@ pub fn run(command: &ApplicationCommandInteraction) -> String {
     "hehehehehehehe".to_string()
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut CreateApplicationCommand) -> &mut CreateApplicationCommand {
     command
         .name("welcome")

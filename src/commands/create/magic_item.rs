@@ -30,6 +30,7 @@ struct Data {
     magic_items: MagicItemData
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     dotenv().ok();
 
@@ -136,6 +137,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     data_json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> & mut builder::CreateApplicationCommand {
     command
         .name("create_magic_item")
@@ -178,7 +180,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> & mut builde
         })
 }
 
-pub fn create_magic_item_embed(data: &str) -> builder::CreateEmbed {
+pub fn create_embed(data: &str) -> builder::CreateEmbed {
     let data: Data = serde_json::from_str(data).unwrap();
     let magic_item = &data.magic_items;
 

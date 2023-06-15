@@ -26,6 +26,7 @@ struct Data {
     magic_items: Vec<MagicItemData>
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let guild_id = command.guild_id.unwrap().to_string();
 
@@ -77,6 +78,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     data_json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("list_magic_item")
@@ -98,7 +100,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-pub fn create_list_magic_item_embed(data: &str) -> builder::CreateEmbed {
+pub fn create_embed(data: &str) -> builder::CreateEmbed {
     let data: Data = serde_json::from_str(data).unwrap();
     let magic = &data.magic_items[0];
 

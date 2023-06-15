@@ -4,6 +4,7 @@ use serenity::model::prelude::interaction::application_command::ApplicationComma
 
 use rand::Rng;
 
+#[allow(dead_code)]
 pub fn run(command: &ApplicationCommandInteraction) -> String {
     let data = &command.data;
     let options = &data.options;
@@ -23,6 +24,7 @@ pub fn run(command: &ApplicationCommandInteraction) -> String {
     result.to_string()
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("roll")

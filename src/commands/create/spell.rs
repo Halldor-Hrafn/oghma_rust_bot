@@ -34,6 +34,7 @@ struct Data {
     spells: SpellData
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     // println!("data: {:#?}", command.data);
     dotenv().ok();
@@ -180,6 +181,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     data_json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("create_spell")
@@ -250,7 +252,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-pub fn create_spell_embed(data: &str) -> builder::CreateEmbed {
+pub fn create_embed(data: &str) -> builder::CreateEmbed {
     let data: Data = serde_json::from_str(data).unwrap();
     let spell = &data.spells;
 

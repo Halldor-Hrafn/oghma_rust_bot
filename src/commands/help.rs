@@ -3,15 +3,7 @@ use serenity::builder::CreateEmbed;
 use serenity::model::prelude::command::CommandOptionType;
 use serenity::model::prelude::interaction::application_command::ApplicationCommandInteraction;
 
-use serde_json::json;
-
-use postgrest::Postgrest;
-
-use dotenv::dotenv;
-
 use serde::{Serialize, Deserialize};
-
-use colorized::*;
 
 #[derive(Serialize, Deserialize)]
 struct Data {
@@ -19,6 +11,7 @@ struct Data {
     command_name: String,
 }
 
+#[allow(dead_code)]
 pub fn run(command: &ApplicationCommandInteraction) -> String {
     let options = &command.data.options;
 
@@ -37,6 +30,7 @@ pub fn run(command: &ApplicationCommandInteraction) -> String {
     data
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("help")
@@ -50,7 +44,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-pub fn create_help_embed(data: &str) -> builder::CreateEmbed{
+pub fn create_embed(data: &str) -> builder::CreateEmbed{
     let data: Data = serde_json::from_str(data).unwrap();
 
     let command = data.command_name.as_str();

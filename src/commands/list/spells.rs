@@ -30,6 +30,7 @@ struct Data {
     spells: Vec<SpellData>,
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let guild_id = command.guild_id.unwrap().to_string();
 
@@ -72,6 +73,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     data_json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("list_spells")
@@ -86,7 +88,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-pub fn create_list_spells_embed(content: &String) -> CreateEmbed {
+pub fn create_embed(content: &String) -> CreateEmbed {
     let data: Data = serde_json::from_str(content).unwrap();
 
     CreateEmbed::default()

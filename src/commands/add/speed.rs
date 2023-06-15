@@ -7,8 +7,6 @@ use serde_json::json;
 
 use postgrest::Postgrest;
 
-use dotenv::dotenv;
-
 use serde::{Serialize, Deserialize};
 
 use colorized::*;
@@ -25,6 +23,7 @@ struct Data {
     range: String,
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let guild_id = command.guild_id.unwrap().to_string();
     let user_id = command.user.id.to_string();
@@ -100,6 +99,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     response
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("add_speed")

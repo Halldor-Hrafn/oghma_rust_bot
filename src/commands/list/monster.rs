@@ -48,6 +48,7 @@ struct Data {
     monsters: CompleteData
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     dotenv().ok();
 
@@ -124,6 +125,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("list_monster")

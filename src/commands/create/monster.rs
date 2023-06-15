@@ -32,6 +32,7 @@ struct Data {
     monsters: MonsterData
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     colorize_println(format!("data: {:#?}", command.data), Colors::BlueFg);
     dotenv().ok();
@@ -158,6 +159,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     data_json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("create_monster")
@@ -243,7 +245,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-pub fn create_monster_embed(data: &str) -> CreateEmbed {
+pub fn create_embed(data: &str) -> CreateEmbed {
     let data: Data = serde_json::from_str(data).unwrap();
 
     let monster = data.monsters;

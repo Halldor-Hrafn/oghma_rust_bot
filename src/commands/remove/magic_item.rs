@@ -8,6 +8,7 @@ use dotenv::dotenv;
 
 use colorized::*;
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     dotenv().ok();
 
@@ -49,6 +50,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     response
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("remove_magic_item")

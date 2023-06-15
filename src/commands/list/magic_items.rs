@@ -28,6 +28,7 @@ struct Data {
     magic_items: Vec<MagicItemData>,
 }
 
+#[allow(dead_code)]
 pub async fn run(command: &ApplicationCommandInteraction) -> String {
     let guild_id = command.guild_id.unwrap().to_string();
 
@@ -70,6 +71,7 @@ pub async fn run(command: &ApplicationCommandInteraction) -> String {
     data_json
 }
 
+#[allow(dead_code)]
 pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder::CreateApplicationCommand {
     command
         .name("list_magic_items")
@@ -84,22 +86,7 @@ pub fn register(command: &mut builder::CreateApplicationCommand) -> &mut builder
         })
 }
 
-// pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
-//     let data: Data = serde_json::from_str(content).unwrap();
-
-//     CreateEmbed::default()
-//         .title("Magic Items created")
-//         .description(format!("Magic Items created by <@{}>", data.user_id))
-//         .fields(data.magic_items.iter().map(|magic_item| {
-//             (
-//                 magic_item.name.clone(),
-//                 format!("Rarity: {}\nType: {}\nDescription: {}\nAttunement: {}", magic_item.rarity, magic_item.type_, magic_item.description, magic_item.attunement),
-//                 false
-//             )
-//         }).collect::<Vec<(String, String, bool)>>()).to_owned()
-// }
-
-pub fn create_list_magic_items_embed(content: &String) -> CreateEmbed {
+pub fn create_embed(content: &String) -> CreateEmbed {
     let data: Data = serde_json::from_str(content).unwrap();
 
     CreateEmbed::default()
